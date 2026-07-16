@@ -1,0 +1,13 @@
+openai>=2.0
+
+yfinance
+
+pandas
+
+python-dotenv
+
+rich
+
+tabulate
+
+ollama
