@@ -1,23 +1,18 @@
 from app.infrastructure.market_data.yahoo_repository import YahooRepository
 
-from app.infrastructure.llm.ollama_provider import OllamaProvider
-
 from app.application.services.indicator_service import IndicatorService
 from app.application.services.research_service import ResearchService
 
 
 repo = YahooRepository()
 
-indicator = IndicatorService()
+indicator_service = IndicatorService()
 
-llm = OllamaProvider()
-
-service = ResearchService(
+research = ResearchService(
     repo,
-    indicator,
-    llm,
+    indicator_service,
 )
 
-report = service.research("AAPL")
+context = research.build_context("AAPL")
 
-print(report)
+print(context)
