@@ -11,3 +11,9 @@ rich
 tabulate
 
 ollama
+
+torch
+
+scikit-learn
+
+numpy
