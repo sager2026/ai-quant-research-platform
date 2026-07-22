@@ -1,41 +1,29 @@
-from app.application.services.indicator_service import (
-    IndicatorService,
-)
-from app.application.services.prediction_service import (
-    PredictionService,
-)
-from app.application.services.research_service import (
-    ResearchService,
-)
-from app.infrastructure.llm.ollama_provider import (
-    OllamaProvider,
-)
-from app.infrastructure.market_data.yahoo_repository import (
-    YahooRepository,
-)
-from app.infrastructure.ml.lstm_model import (
-    LSTMModel,
-)
+from app.application.services.indicator_service import IndicatorService
+from app.application.services.prediction_service import PredictionService
+from app.application.services.research_service import ResearchService
+
+from app.infrastructure.llm.ollama_provider import OllamaProvider
+from app.infrastructure.market_data.yahoo_repository import YahooRepository
+from app.infrastructure.ml.forecast_model_factory import ForecastModelFactory
+
+
+TICKER = "AAPL"
+
+# Change only this value to switch forecasting models.
+MODEL_NAME = "transformer"
 
 
 def main() -> None:
-    ticker = "AAPL"
-
     price_repository = YahooRepository()
 
     indicator_service = IndicatorService()
 
-    lstm_model = LSTMModel(
-        sequence_length=30,
-        hidden_size=32,
-        num_layers=1,
-        learning_rate=0.001,
-        epochs=100,
-        random_seed=42,
+    forecast_model = ForecastModelFactory.create(
+        MODEL_NAME
     )
 
     prediction_service = PredictionService(
-        model=lstm_model
+        model=forecast_model
     )
 
     llm = OllamaProvider(
@@ -49,8 +37,20 @@ def main() -> None:
         llm=llm,
     )
 
+    print(
+        f"Ticker: {TICKER}"
+    )
+
+    print(
+        f"Forecast model: {MODEL_NAME}"
+    )
+
+    print(
+        "=" * 60
+    )
+
     report = research_service.research(
-        ticker=ticker
+        ticker=TICKER
     )
 
     print(report)

@@ -1,13 +1,18 @@
+from dataclasses import replace
+
 import pandas as pd
 
 from app.domain.entities.prediction_result import PredictionResult
-from app.domain.ml.interfaces.ml_model import MLModel
+from app.domain.forecast.interfaces.forecast_model import ForecastModel
 
 
 class PredictionService:
-    """Application service coordinating price prediction."""
+    """Application service coordinating return forecasting."""
 
-    def __init__(self, model: MLModel) -> None:
+    def __init__(
+        self,
+        model: ForecastModel,
+    ) -> None:
         self.model = model
 
     def predict(
@@ -15,7 +20,20 @@ class PredictionService:
         prices: pd.Series,
         forecast_horizon: int = 1,
     ) -> PredictionResult:
-        return self.model.fit_predict(
+        result = self.model.fit_predict(
             prices=prices,
             forecast_horizon=forecast_horizon,
         )
+
+        return replace(
+            result,
+            model_name=self._get_model_name(),
+        )
+
+    def _get_model_name(self) -> str:
+        class_name = type(self.model).__name__
+
+        if class_name.endswith("Model"):
+            class_name = class_name[:-5]
+
+        return class_name

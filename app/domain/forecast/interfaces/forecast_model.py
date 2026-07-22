@@ -5,7 +5,7 @@ import pandas as pd
 from app.domain.entities.prediction_result import PredictionResult
 
 
-class MLModel(ABC):
+class ForecastModel(ABC):
     """Interface implemented by all QuantMind forecasting models."""
 
     @abstractmethod

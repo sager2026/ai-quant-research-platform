@@ -3,19 +3,21 @@ from dataclasses import dataclass
 
 @dataclass
 class PredictionResult:
+    """Structured output and evaluation metrics for a forecast."""
+
     current_price: float
     predicted_price: float
     predicted_return: float
     forecast_horizon: int
-
     validation_loss: float
     validation_rmse: float
     validation_mae: float
     baseline_rmse: float
+    model_name: str = "Unknown"
 
     @property
     def direction(self) -> str:
-        threshold = 0.002  # 0.20%
+        threshold = 0.002
 
         if self.predicted_return > threshold:
             return "Bullish"
