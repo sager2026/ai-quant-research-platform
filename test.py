@@ -1,46 +1,161 @@
-from app.application.services.prediction_service import PredictionService
-from app.infrastructure.market_data.yahoo_repository import YahooRepository
-from app.infrastructure.ml.lstm_model import LSTMModel
-from app.infrastructure.ml.transformer_model import TransformerModel
+from app.infrastructure.rag.sec_filing_repository import (
+    SECFilingRepository,
+)
+from app.infrastructure.rag.sec_document_extractor import (
+    SECDocumentExtractor,
+)
+from app.infrastructure.rag.text_chunker import (
+    TextChunker,
+)
+from app.infrastructure.rag.ollama_embedding_model import (
+    OllamaEmbeddingModel,
+)
+from app.infrastructure.rag.chroma_vector_store import (
+    ChromaVectorStore,
+)
+from app.infrastructure.rag.vector_knowledge_store import (
+    VectorKnowledgeStore,
+)
+from app.infrastructure.rag.vector_evidence_retriever import (
+    VectorEvidenceRetriever,
+)
+from app.application.services.filing_ingestion_service import (
+    FilingIngestionService,
+)
 
 
-repository = YahooRepository()
-history = repository.get_history("AAPL")
-prices = history["Close"]
+# ---------------------------------------------------------
+# 1. Create infrastructure components
+# ---------------------------------------------------------
 
-models = {
-    "LSTM": LSTMModel(
-        sequence_length=30,
-        hidden_size=32,
-        epochs=100,
-        random_seed=42,
-    ),
-    "Transformer": TransformerModel(
-        sequence_length=30,
-        d_model=32,
-        nhead=4,
-        num_layers=2,
-        dim_feedforward=64,
-        dropout=0.1,
-        epochs=100,
-        random_seed=42,
-    ),
-}
+filing_repository = SECFilingRepository(
+    user_agent="QuantMind your-email@example.com"
+)
 
-for model_name, model in models.items():
-    service = PredictionService(model=model)
-    result = service.predict(prices, forecast_horizon=1)
+extractor = SECDocumentExtractor()
 
-    improvement = (
-        result.baseline_rmse - result.validation_rmse
-    ) / result.baseline_rmse
+chunker = TextChunker(
+    chunk_size=2000,
+    overlap=300,
+)
 
-    print("=" * 50)
-    print(f"Model: {model_name}")
-    print(f"Predicted return: {result.predicted_return:.2%}")
-    print(f"Direction: {result.direction}")
-    print(f"Validation RMSE: {result.validation_rmse:.4f}")
-    print(f"Validation MAE: {result.validation_mae:.4f}")
-    print(f"Baseline RMSE: {result.baseline_rmse:.4f}")
-    print(f"Improvement: {improvement:.2%}")
-    print(f"Beats baseline: {result.beats_baseline}")
+embedding_model = OllamaEmbeddingModel(
+    model="embeddinggemma"
+)
+
+vector_store = ChromaVectorStore(
+    path="data/chroma",
+    collection_name="quantmind_filings",
+)
+
+
+# ---------------------------------------------------------
+# 2. Create KnowledgeStore implementation
+# ---------------------------------------------------------
+
+knowledge_store = VectorKnowledgeStore(
+    extractor=extractor,
+    chunker=chunker,
+    embedding_model=embedding_model,
+    vector_store=vector_store,
+)
+
+
+# ---------------------------------------------------------
+# 3. Create ingestion service
+# ---------------------------------------------------------
+
+ingestion_service = FilingIngestionService(
+    filing_repository=filing_repository,
+    knowledge_store=knowledge_store,
+)
+
+
+# ---------------------------------------------------------
+# 4. Ingest Apple's 10-K
+# ---------------------------------------------------------
+
+print("Downloading and ingesting AAPL 10-K...")
+
+ingestion_service.ingest(
+    ticker="AAPL",
+    filing_type="10-K",
+)
+
+print("AAPL 10-K ingestion complete.")
+
+
+# ---------------------------------------------------------
+# 5. Create retriever
+# ---------------------------------------------------------
+
+retriever = VectorEvidenceRetriever(
+    embedding_model=embedding_model,
+    vector_store=vector_store,
+    top_k=5,
+)
+
+
+# ---------------------------------------------------------
+# 6. Retrieve evidence
+# ---------------------------------------------------------
+
+query = "What are Apple's major business risks?"
+
+print()
+print("Research question:")
+print(query)
+print()
+
+result = retriever.retrieve(
+    ticker="AAPL",
+    query=query,
+)
+
+
+# ---------------------------------------------------------
+# 7. Print RetrievalResult
+# ---------------------------------------------------------
+
+print("Retrieved evidence:")
+print("=" * 80)
+
+for index, evidence in enumerate(
+    result.evidence,
+    start=1,
+):
+
+    print()
+    print(f"Evidence #{index}")
+    print("-" * 80)
+
+    print(
+        f"Ticker: {evidence.ticker}"
+    )
+
+    print(
+        f"Filing type: {evidence.filing_type}"
+    )
+
+    print(
+        f"Filing date: {evidence.filing_date}"
+    )
+
+    print(
+        f"Section: {evidence.section}"
+    )
+
+    print(
+        f"Relevance score: "
+        f"{evidence.relevance_score:.4f}"
+    )
+
+    print(
+        f"Source: {evidence.source}"
+    )
+
+    print()
+    print(evidence.text)
+
+    print()
+    print("=" * 80)
