@@ -6,12 +6,12 @@
 
 **An open-source platform for explainable AI-powered quantitative investment research.**
 
-QuantMind integrates **financial econometrics**, **technical analysis**, **deep learning**, **large language models**, and **Clean Architecture** into a unified equity-research workflow.
+QuantMind integrates **financial econometrics**, **technical analysis**, **deep learning**, **Retrieval-Augmented Generation (RAG)**, **large language models**, and **Clean Architecture** into a unified equity-research workflow.
 
 ![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
 ![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-000000?style=flat-square)
-![Version](https://img.shields.io/badge/QuantMind-v0.4-0A66C2?style=flat-square)
+![Version](https://img.shields.io/badge/QuantMind-v0.5-0A66C2?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 </div>
@@ -20,146 +20,193 @@ QuantMind integrates **financial econometrics**, **technical analysis**, **deep 
 
 ## System Architecture
 
-The following diagram presents the implemented architecture of **QuantMind v0.4**. It shows how the Presentation, Application, Domain, and Infrastructure layers collaborate while keeping quantitative computation, forecasting, and AI reasoning separate.
+![QuantMind v0.5 System Architecture](docs/images/architecture_v0.5.png)
 
-<p align="center">
-  <img
-    src="docs/images/architecture_v0.4.png"
-    alt="QuantMind v0.4 System Architecture"
-    width="100%"
-  >
-</p>
+---
 
-<p align="center">
-  <em>Figure 1. QuantMind v0.4 System Architecture</em>
-</p>
+## Research Workflow
+
+![QuantMind v0.5 Research Workflow](docs/images/workflow_v0.5.png)
 
 ---
 
 ## At a Glance
 
-**Current release:** `v0.4 — Multi-Model Forecast Engine`
+**Current release:** `v0.5 — Financial Knowledge Engine (RAG)`
 
 QuantMind currently provides:
 
 - deterministic technical analysis using SMA, EMA, RSI, and MACD;
 - return-based forecasting using LSTM and Transformer models;
 - a shared forecasting contract and centralized model factory;
-- consistent evaluation against a naive zero-return baseline;
+- consistent model evaluation against a naive zero-return baseline;
+- SEC 10-K filing ingestion;
+- SEC document extraction and text chunking;
+- local embedding generation through Ollama;
+- persistent vector storage through Chroma;
+- semantic retrieval of fundamental filing evidence;
+- integration of technical, forecast, and fundamental evidence;
 - local LLM reasoning through Ollama;
 - evidence-constrained Markdown equity research reports;
-- a Clean Architecture foundation designed for RAG, agents, APIs, and deployment.
+- a Clean Architecture foundation designed for future agents, APIs, MCP, and cloud deployment.
 
 ### Current Status
 
 | Component | Status |
 |---|:---:|
-| Yahoo Finance market-data integration | ✅ |
-| SMA, EMA, RSI, and MACD | ✅ |
-| LSTM return forecasting | ✅ |
-| Transformer return forecasting | ✅ |
-| Shared `ForecastModel` interface | ✅ |
-| `ForecastModelFactory` | ✅ |
-| `PredictionService` | ✅ |
-| Baseline comparison | ✅ |
-| Dynamic model-aware reporting | ✅ |
-| Evidence-constrained prompting | ✅ |
-| Financial Knowledge Engine (RAG) | 🚧 Planned |
-| LangGraph multi-agent workflow | 🚧 Planned |
-| FastAPI platform | 🚧 Planned |
-| Cloud deployment and CI/CD | 🚧 Planned |
-| MCP integration | 🚧 Planned |
-
----
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Why QuantMind?](#why-quantmind)
-- [Project Goals](#project-goals)
-- [Engineering Highlights](#engineering-highlights)
-- [Research Philosophy](#research-philosophy)
-- [The Three Research Engines](#the-three-research-engines)
-- [Clean Architecture](#clean-architecture)
-- [Forecast Engine](#forecast-engine)
-- [Research Workflow](#research-workflow)
-- [Model Evaluation](#model-evaluation)
-- [Evidence-Constrained AI](#evidence-constrained-ai)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Engineering Decisions](#engineering-decisions)
-- [Architecture Evolution](#architecture-evolution)
-- [Roadmap](#roadmap)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [Example Output](#example-output)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
-- [Disclaimer](#disclaimer)
-- [Beyond the Code](#beyond-the-code)
+| Yahoo Finance market-data integration | Complete |
+| SMA, EMA, RSI, and MACD | Complete |
+| LSTM return forecasting | Complete |
+| Transformer return forecasting | Complete |
+| Shared `ForecastModel` interface | Complete |
+| `ForecastModelFactory` | Complete |
+| `PredictionService` | Complete |
+| Naive baseline comparison | Complete |
+| Dynamic model-aware reporting | Complete |
+| Evidence-constrained prompting | Complete |
+| SEC 10-K filing ingestion | Complete |
+| SEC document extraction | Complete |
+| Text chunking | Complete |
+| Ollama embedding generation | Complete |
+| Chroma vector storage | Complete |
+| Semantic filing-evidence retrieval | Complete |
+| Financial Knowledge Engine (RAG) | Complete |
+| Integrated quantitative + fundamental reporting | Complete |
+| SEC 10-Q research | Planned |
+| Earnings-call transcript ingestion | Planned |
+| Financial-news retrieval | Planned |
+| LangGraph multi-agent workflow | Planned |
+| FastAPI platform | Planned |
+| Cloud deployment and CI/CD | Planned |
+| MCP integration | Planned |
 
 ---
 
 ## Project Overview
 
-QuantMind is an open-source **AI Quant Research Platform** designed to demonstrate how quantitative finance, machine learning, and modern AI engineering can work together within one maintainable research system.
+QuantMind is an open-source AI Quant Research Platform designed to combine quantitative finance and modern AI engineering in a transparent and extensible research system.
 
-Unlike many financial AI projects that tightly couple data retrieval, indicators, forecasting models, and LLM prompts, QuantMind deliberately separates these responsibilities into independent architectural components.
+The current release combines:
 
-This separation makes the platform:
+- structured market data;
+- deterministic technical indicators;
+- return-based deep-learning forecasts;
+- model evaluation;
+- SEC filing ingestion;
+- semantic evidence retrieval;
+- Retrieval-Augmented Generation;
+- evidence-constrained LLM reasoning.
 
-- easier to understand;
-- easier to test;
-- easier to extend;
-- less dependent on individual technologies;
-- more suitable for incremental evolution.
+The result is an integrated professional Markdown equity research report.
 
-The current release combines structured market data, deterministic technical indicators, return-based deep-learning forecasts, model evaluation, and evidence-constrained LLM reasoning to generate a professional Markdown equity research report.
+QuantMind v0.5 introduces a **Financial Knowledge Engine based on Retrieval-Augmented Generation (RAG)**.
 
-QuantMind is not intended to be an automated trading system. Its focus is **explainable research, predictive analytics, transparent model evaluation, and investment decision support**.
+SEC filing evidence is retrieved independently from the quantitative pipeline and incorporated into the research context as a separate fundamental evidence stream.
+
+This allows QuantMind to distinguish between:
+
+1. deterministic technical evidence;
+2. model-based forecast evidence;
+3. retrieved fundamental evidence;
+4. generative interpretation.
+
+QuantMind is **not intended to be an automated trading system**.
+
+Its focus is:
+
+- explainable investment research;
+- predictive analytics;
+- transparent model evaluation;
+- evidence retrieval;
+- AI-assisted research synthesis;
+- investment decision support.
 
 ---
 
 ## Why QuantMind?
 
-Many open-source finance projects focus primarily on one of two areas:
+Many AI-finance demonstrations follow a simple pattern:
 
-1. increasingly complex prediction models; or
-2. large language models that summarize financial information.
+```text
+Download prices
+      ↓
+Calculate indicators
+      ↓
+Send everything to an LLM
+      ↓
+Generate a recommendation
+```
 
 QuantMind takes a different approach.
 
-The central objective is not simply to produce a forecast. It is to demonstrate **how an AI-assisted quantitative research platform should be engineered**.
+It treats quantitative analysis, forecasting, financial knowledge retrieval, and generative reasoning as separate engineering responsibilities.
 
-The project treats software architecture as a first-class design concern. Quantitative calculations, statistical forecasting, AI reasoning, and external infrastructure are separated through stable interfaces and application services.
+```text
+Technical Evidence -----------+
+                              |
+Forecast Evidence ------------+----> ResearchContext
+                              |
+Fundamental Evidence ---------+
+                                      |
+                                      v
+                                 EquityPrompt
+                                      |
+                                      v
+                                  Local LLM
+                                      |
+                                      v
+                           Integrated Research Report
+```
 
-As a result:
+This makes the system easier to:
 
-- forecasting models can be replaced without rewriting the research workflow;
-- external data providers can evolve without changing domain logic;
-- LLM providers can be exchanged without changing quantitative calculations;
-- future RAG and multi-agent capabilities can be added to an existing foundation rather than forcing a redesign.
-
-The architecture—not any single model—is the project's primary long-term asset.
+- test;
+- extend;
+- debug;
+- evaluate;
+- explain;
+- replace component by component.
 
 ---
 
-## Project Goals
+## Research Philosophy
 
-QuantMind has three long-term goals.
+QuantMind follows one core principle:
 
-### 1. Build an Extensible AI Research Platform
+> **Separate deterministic mathematics, statistical forecasting, retrieved knowledge, and generative AI reasoning into independent responsibilities.**
 
-New models, providers, retrieval systems, agents, and interfaces should be introduced without destabilizing the existing application.
+```text
+Historical Market Data
+        |
+        +----> Deterministic Quantitative Analysis
+        |
+        +----> Statistical Forecasting
 
-### 2. Promote Explainable Investment Research
+SEC Filings
+        |
+        +----> Retrieval-Augmented Knowledge
+                        |
+                        v
+              Structured Research Context
+                        |
+                        v
+           Evidence-Constrained AI Reasoning
+                        |
+                        v
+             Markdown Research Report
+```
 
-Quantitative evidence should be computed explicitly, evaluated objectively, and communicated clearly. The LLM should explain evidence rather than replace it.
+Each stage answers a different research question.
 
-### 3. Demonstrate Modern AI Software Engineering
+| Stage | Research Question |
+|---|---|
+| Technical analysis | What is the current quantitative market configuration? |
+| Forecasting | What next-period return does the model estimate? |
+| Model evaluation | Does the model improve on a simple benchmark? |
+| Fundamental retrieval | What relevant evidence exists in the company's filings? |
+| AI reasoning | How should these separate evidence streams be interpreted together? |
 
-The repository is intended to demonstrate Clean Architecture, SOLID principles, dependency inversion, model abstraction, factory-based construction, baseline evaluation, and disciplined prompt design in a realistic financial application.
+This design keeps calculations reproducible, forecasts measurable, retrieved evidence traceable, and LLM explanations grounded in supplied information.
 
 ---
 
@@ -168,192 +215,481 @@ The repository is intended to demonstrate Clean Architecture, SOLID principles, 
 | Engineering Area | Implementation |
 |---|---|
 | Software architecture | Clean Architecture |
-| Design principles | SOLID and separation of concerns |
+| Design principles | SOLID, dependency inversion, separation of concerns |
 | Design patterns | Factory Pattern and Dependency Injection |
 | Market data | Yahoo Finance repository |
 | Technical analysis | SMA, EMA, RSI, and MACD |
 | Forecasting | LSTM and Transformer |
 | Forecast contract | Shared `ForecastModel` interface |
 | Model creation | `ForecastModelFactory` |
-| Application orchestration | `ResearchService`, `IndicatorService`, `PredictionService` |
+| Application orchestration | `ResearchService`, `IndicatorService`, `PredictionService`, `FilingIngestionService` |
+| Financial knowledge | Retrieval-Augmented Generation (RAG) |
+| Filing source | SEC filings |
+| Document processing | SEC document extraction and text chunking |
+| Embeddings | Ollama embedding model |
+| Vector database | Chroma |
+| Knowledge abstraction | `KnowledgeStore` |
+| Retrieval abstraction | `EvidenceRetriever` |
+| Fundamental evidence | `FundamentalEvidence` and `RetrievalResult` |
 | AI runtime | Ollama |
 | LLM reasoning | Qwen with evidence-constrained prompting |
 | Evaluation | RMSE, MAE, and naive baseline comparison |
-| Output | Structured Markdown equity research report |
-| Documentation | Versioned architecture and workflow diagrams |
+| Output | Integrated Markdown equity research report |
+| Documentation | Versioned architecture and workflow documentation |
 
 ---
 
-## Research Philosophy
+# The Three Research Evidence Streams
 
-QuantMind follows one core principle:
+QuantMind v0.5 integrates three distinct research evidence streams.
 
-> **Separate deterministic mathematics, statistical forecasting, and AI reasoning into independent responsibilities.**
+## 1. Technical Analysis
+
+Technical analysis is deterministic.
 
 ```text
-Historical Market Data
-          │
-          ▼
-Deterministic Quantitative Analysis
-          │
-          ▼
-Statistical Forecasting
-          │
-          ▼
-Evidence-Constrained AI Reasoning
-          │
-          ▼
-Markdown Equity Research Report
+Historical Prices
+       ↓
+IndicatorService
+       ↓
+SMA
+EMA
+RSI
+MACD
+       ↓
+IndicatorResult
 ```
 
-Each stage answers a different question.
+The LLM does not calculate these indicators.
 
-| Stage | Research Question |
-|---|---|
-| Technical analysis | What is the current quantitative market configuration? |
-| Forecasting | What next-period return does the model estimate? |
-| Model evaluation | Does the model improve on a simple benchmark? |
-| AI reasoning | How should the supplied quantitative evidence be interpreted? |
+It receives the calculated values as structured evidence.
 
-This design keeps calculations reproducible, forecasts measurable, and explanations traceable to supplied evidence.
+This keeps quantitative computation outside the generative model.
 
 ---
 
-## The Three Research Engines
+## 2. Forecast Analysis
 
-QuantMind can be understood as three cooperating research engines.
-
-### 1. Quantitative Analysis Engine
-
-The Quantitative Analysis Engine converts historical market prices into deterministic technical evidence.
-
-Current indicators:
-
-- Simple Moving Average (SMA);
-- Exponential Moving Average (EMA);
-- Relative Strength Index (RSI);
-- Moving Average Convergence Divergence (MACD).
-
-Given identical market data and parameters, these calculations return identical results.
-
-### 2. Forecast Engine
-
-The Forecast Engine estimates next-day simple returns using interchangeable deep-learning models.
-
-Current implementations:
-
-- LSTM;
-- Transformer.
-
-The system forecasts returns and then converts the predicted return into a mechanically implied price for human interpretation.
-
-### 3. AI Research Engine
-
-The AI Research Engine receives structured market, indicator, forecast, and evaluation results. It produces a professional research report through an evidence-constrained prompt and a local Ollama model.
-
-The LLM acts as an analyst—not as the source of quantitative calculations.
-
----
-
-## Clean Architecture
-
-QuantMind follows a four-layer Clean Architecture.
+Forecasting is handled independently from technical analysis.
 
 ```text
-Presentation Layer
-└── main.py
-
-Application Layer
-├── ResearchService
-├── IndicatorService
-└── PredictionService
-
-Domain Layer
-├── Entities
-├── ForecastModel interface
-└── Repository interfaces
-
-Infrastructure Layer
-├── YahooRepository
-├── OllamaProvider
-├── ForecastModelFactory
-├── LSTMModel
-└── TransformerModel
+Historical Prices
+       ↓
+PredictionService
+       ↓
+ForecastModel
+       ↓
+   ┌─────────────┐
+   │             │
+   ▼             ▼
+ LSTM       Transformer
+   │             │
+   └──────┬──────┘
+          ↓
+   PredictionResult
 ```
 
-### Presentation Layer
+Both models implement a shared forecasting contract.
 
-`main.py` is the **Composition Root**. It selects concrete implementations and assembles the application through dependency injection.
+This allows model implementations to be replaced without changing the higher-level research workflow.
 
-### Application Layer
+The forecasting subsystem evaluates predictions using:
 
-Application services coordinate use cases:
+- validation RMSE;
+- validation MAE;
+- naive zero-return baseline RMSE;
+- improvement over baseline.
 
-- `ResearchService` orchestrates the end-to-end equity research workflow;
-- `IndicatorService` calculates technical indicators;
-- `PredictionService` requests and returns model forecasts.
-
-### Domain Layer
-
-The Domain layer contains stable concepts and contracts:
-
-- `ResearchContext`;
-- `IndicatorResult`;
-- `PredictionResult`;
-- `ForecastModel`;
-- `PriceRepository`.
-
-### Infrastructure Layer
-
-Infrastructure provides external and implementation-specific behavior:
-
-- Yahoo Finance market-data retrieval;
-- Ollama LLM access;
-- LSTM and Transformer implementations;
-- model construction through `ForecastModelFactory`.
-
-Application logic depends on abstractions rather than implementation details. This keeps external technologies replaceable.
+This prevents the report from treating a model forecast as meaningful simply because a prediction exists.
 
 ---
 
-## Forecast Engine
+## 3. Fundamental Analysis through RAG
 
-QuantMind v0.4 introduces a reusable multi-model Forecast Engine.
+v0.5 introduces fundamental evidence derived from SEC filings.
+
+The knowledge pipeline is separated into two distinct processes:
+
+### Knowledge Preparation
+
+```text
+SEC Filing
+    ↓
+SECFilingRepository
+    ↓
+Filing
+    ↓
+FilingIngestionService
+    ↓
+KnowledgeStore
+    ↓
+VectorKnowledgeStore
+    ↓
+Document Extraction
+    ↓
+Text Chunking
+    ↓
+Ollama Embeddings
+    ↓
+Chroma Vector Store
+```
+
+### Research-Time Retrieval
+
+```text
+Research Question
+       ↓
+EvidenceRetriever
+       ↓
+VectorEvidenceRetriever
+       ↓
+Query Embedding
+       ↓
+Chroma Vector Search
+       ↓
+FundamentalEvidence
+       ↓
+RetrievalResult
+```
+
+The distinction is important:
+
+> **Ingestion prepares the knowledge base. Retrieval uses the knowledge base during research.**
+
+Technical analysis and forecasting do not depend on RAG.
+
+They remain independent evidence-producing pipelines.
+
+---
+
+# Financial Knowledge Engine (RAG)
+
+The v0.5 Financial Knowledge Engine enables QuantMind to retrieve relevant evidence from SEC filings before generating a research report.
+
+## RAG Pipeline
+
+```text
+                     KNOWLEDGE PREPARATION
+
+SEC Filing
+    ↓
+SECFilingRepository
+    ↓
+Filing
+    ↓
+FilingIngestionService
+    ↓
+VectorKnowledgeStore
+    ↓
+SECDocumentExtractor
+    ↓
+TextChunker
+    ↓
+OllamaEmbeddingModel
+    ↓
+ChromaVectorStore
+    ↓
+Persistent Vector Knowledge
+
+
+                     RESEARCH EXECUTION
+
+Research Question
+    ↓
+VectorEvidenceRetriever
+    ↓
+OllamaEmbeddingModel
+    ↓
+ChromaVectorStore
+    ↓
+Relevant Filing Chunks
+    ↓
+FundamentalEvidence
+    ↓
+RetrievalResult
+```
+
+The current implementation has been tested with SEC 10-K filings.
+
+Future versions can extend the same architecture to additional sources such as:
+
+- 10-Q filings;
+- earnings-call transcripts;
+- financial news;
+- other structured or unstructured financial documents.
+
+---
+
+# Clean Architecture
+
+QuantMind follows Clean Architecture principles.
+
+```text
+Presentation
+     ↓
+Application
+     ↓
+Domain
+     ↑
+Infrastructure
+```
+
+Dependencies point toward abstractions rather than concrete infrastructure implementations.
+
+The architecture separates:
+
+- business concepts;
+- application orchestration;
+- external data access;
+- machine-learning implementations;
+- vector databases;
+- embedding models;
+- LLM providers.
+
+---
+
+## Domain Layer
+
+The Domain layer contains core financial entities and domain abstractions.
+
+Examples include:
+
+```text
+ResearchContext
+IndicatorResult
+PredictionResult
+Filing
+FundamentalEvidence
+RetrievalResult
+PriceRepository
+FilingRepository
+ForecastModel
+```
+
+The Domain layer does not know about:
+
+- Yahoo Finance;
+- SEC HTTP access;
+- Chroma;
+- Ollama;
+- Qwen;
+- PyTorch infrastructure details.
+
+---
+
+## Application Layer
+
+The Application layer coordinates use cases.
+
+Key services include:
+
+```text
+ResearchService
+IndicatorService
+PredictionService
+FilingIngestionService
+```
+
+Application-level abstractions include:
+
+```text
+KnowledgeStore
+EvidenceRetriever
+LLMInterface
+```
+
+`ResearchService` orchestrates the online research workflow.
+
+`FilingIngestionService` is a separate use case responsible for preparing the financial knowledge base.
+
+These services are parallel application capabilities rather than one being nested inside the other.
+
+---
+
+## Infrastructure Layer
+
+The Infrastructure layer implements external technologies and concrete adapters.
+
+Examples include:
+
+```text
+YahooRepository
+SECFilingRepository
+SECDocumentExtractor
+TextChunker
+OllamaEmbeddingModel
+ChromaVectorStore
+VectorKnowledgeStore
+VectorEvidenceRetriever
+OllamaProvider
+LSTMForecastModel
+TransformerForecastModel
+```
+
+This means infrastructure technologies can be replaced while preserving higher-level application logic.
+
+For example:
+
+```text
+EvidenceRetriever
+       ▲
+       │ implements
+       │
+VectorEvidenceRetriever
+```
+
+and:
+
+```text
+KnowledgeStore
+       ▲
+       │ implements
+       │
+VectorKnowledgeStore
+```
+
+Similarly:
+
+```text
+FilingRepository
+       ▲
+       │ implements
+       │
+SECFilingRepository
+```
+
+This is Dependency Inversion in practice.
+
+---
+
+# Research Workflow
+
+A typical QuantMind v0.5 research request combines three independent evidence streams.
+
+```text
+                        MARKET DATA
+
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+             ▼                             ▼
+     IndicatorService              PredictionService
+             │                             │
+             ▼                             ▼
+     IndicatorResult               PredictionResult
+             │                             │
+             │                             │
+             │                      RESEARCH QUESTION
+             │                             │
+             │                             ▼
+             │                    EvidenceRetriever
+             │                             │
+             │                             ▼
+             │                         Chroma
+             │                             │
+             │                             ▼
+             │                    RetrievalResult
+             │                             │
+             └──────────────┬──────────────┘
+                            │
+                            ▼
+                     ResearchContext
+                            │
+                            ▼
+                       EquityPrompt
+                            │
+                            ▼
+                      Ollama / Qwen
+                            │
+                            ▼
+                Integrated Research Report
+```
+
+`ResearchContext` is the integration boundary.
+
+It combines:
+
+```text
+ticker
+current_price
+history
+indicators
+prediction
+retrieval
+```
+
+The LLM therefore receives already-structured evidence rather than being responsible for retrieving or calculating everything itself.
+
+---
+
+# Evidence-Constrained AI Reasoning
+
+QuantMind deliberately limits what the LLM is allowed to infer.
+
+The prompt distinguishes:
+
+### Deterministic Evidence
+
+Examples:
+
+- current price relative to SMA;
+- current price relative to EMA;
+- current RSI;
+- current MACD configuration.
+
+### Model-Based Evidence
+
+Examples:
+
+- predicted next-day return;
+- implied next-day price;
+- forecast direction;
+- validation RMSE;
+- validation MAE;
+- baseline comparison.
+
+### Retrieved Fundamental Evidence
+
+Examples:
+
+- business risks described in SEC filings;
+- regulatory exposure;
+- supply-chain risks;
+- competitive pressures;
+- other evidence explicitly contained in retrieved filing passages.
+
+The prompt instructs the model not to fabricate unsupported facts or relationships between these evidence streams.
+
+---
+
+# Forecasting Architecture
+
+QuantMind supports multiple forecasting models through a shared interface.
+
+```text
+PredictionService
+       ↓
+ForecastModel
+       ↑
+ ┌─────┴───────────┐
+ │                 │
+ ▼                 ▼
+LSTMForecastModel  TransformerForecastModel
+```
+
+Model creation is centralized:
 
 ```text
 ForecastModelFactory
-        │
-        ├── LSTMModel
-        └── TransformerModel
-                │
-                ▼
-        ForecastModel
-          (Interface)
-                │
-                ▼
-        PredictionService
-                │
-                ▼
-        PredictionResult
+       ↓
+MODEL_NAME
+       ↓
+"lstm" or "transformer"
 ```
 
-Every forecasting implementation follows the same contract:
+The application layer therefore does not need model-specific conditional logic.
 
-```python
-from abc import ABC, abstractmethod
-
-class ForecastModel(ABC):
-
-    @abstractmethod
-    def fit_predict(self, prices, forecast_horizon=1):
-        ...
-```
-
-The application does not depend directly on LSTM or Transformer classes. It depends on the shared forecasting abstraction.
-
-### Switching Models
-
-Select the model in `main.py`:
+Changing the model can be as simple as:
 
 ```python
 MODEL_NAME = "transformer"
@@ -365,597 +701,654 @@ or:
 MODEL_NAME = "lstm"
 ```
 
-No changes are required in:
+---
 
-- `ResearchService`;
-- `PredictionService`;
-- `ResearchContext`;
-- `EquityPrompt`;
-- report generation.
+# Model Evaluation
 
-### Adding a New Model
+QuantMind evaluates forecasting models against a simple benchmark.
 
-A new model requires only:
+The naive benchmark assumes:
 
-1. implementing the `ForecastModel` interface; and
-2. registering the implementation in `ForecastModelFactory`.
+```text
+next-day return = 0
+```
 
-This is a practical demonstration of the **Open/Closed Principle**: the platform is open for extension but closed for unnecessary modification.
+The forecasting model is then compared against this baseline using validation RMSE.
+
+```text
+Forecast Model RMSE
+        vs.
+Naive Baseline RMSE
+```
+
+The report also receives:
+
+```text
+Validation RMSE
+Validation MAE
+Naive Baseline RMSE
+Improvement over Baseline
+```
+
+A small improvement over the baseline is not automatically interpreted as strong predictive power.
 
 ---
 
-## Research Workflow
+# Technology Stack
 
-The following diagram shows what happens when QuantMind runs.
-
-<p align="center">
-  <img
-    src="docs/images/workflow_v0.4.png"
-    alt="QuantMind v0.4 Research Workflow"
-    width="95%"
-  >
-</p>
-
-<p align="center">
-  <em>Figure 2. QuantMind v0.4 Research Workflow</em>
-</p>
-
-The runtime workflow consists of six stages.
-
-### 1. Data Acquisition
-
-`YahooRepository` retrieves historical market prices.
-
-### 2. Quantitative Analysis
-
-`IndicatorService` calculates SMA, EMA, RSI, and MACD.
-
-### 3. Forecasting
-
-`PredictionService` calls the selected `ForecastModel` implementation and returns a structured `PredictionResult`.
-
-### 4. Context Construction
-
-`ResearchService` combines market data, indicator results, and forecast results into `ResearchContext`.
-
-### 5. Evidence-Constrained Reasoning
-
-`EquityPrompt` transforms the structured context into a disciplined financial research prompt.
-
-### 6. Report Generation
-
-`OllamaProvider` produces a Markdown equity research report containing:
-
-- Executive Summary;
-- Trend Analysis;
-- Momentum Analysis;
-- Model-Specific Forecast Analysis;
-- Signal Alignment;
-- Risk Assessment;
-- Overall Research Outlook.
-
-Each stage has one responsibility, and each output becomes structured input for the next stage.
-
----
-
-## Model Evaluation
-
-A model is not considered useful merely because it generates a prediction.
-
-QuantMind evaluates every forecasting implementation using a common methodology.
-
-| Metric | Purpose |
+| Category | Technology |
 |---|---|
-| Validation RMSE | Measures the scale of historical validation errors in price units |
-| Validation MAE | Measures the average absolute historical validation error |
-| Naive baseline RMSE | Benchmark based on a zero-return forecast |
-| Improvement over baseline | Measures relative RMSE reduction |
-| Forecast direction | Classifies the estimated return as Bullish, Neutral, or Bearish |
-
-The naive zero-return baseline is important because financial returns are difficult to forecast. A sophisticated model should demonstrate measurable value beyond a simple benchmark.
-
-Small improvements are reported transparently and interpreted cautiously.
-
-Validation RMSE and MAE are aggregate historical error measures. They are not treated as confidence intervals or formal prediction intervals.
-
----
-
-## Evidence-Constrained AI
-
-Large language models can produce convincing explanations even when the available evidence is incomplete.
-
-QuantMind therefore applies an **Evidence-Constrained AI** approach.
-
-All quantitative calculations and forecasts are completed before the LLM is called. The model receives structured evidence and is instructed to reason only from that evidence.
-
-The prompt prevents unsupported claims such as:
-
-- inventing support or resistance levels;
-- claiming moving-average crossovers without historical observations;
-- inferring acceleration, deceleration, strengthening, or weakening from one snapshot;
-- classifying MACD magnitude without an explicit benchmark;
-- interpreting RMSE or MAE as prediction intervals;
-- claiming statistical significance without formal statistical testing;
-- treating a very small forecasted return as a strong directional signal;
-- fabricating company fundamentals, news, or macroeconomic facts.
-
-The objective is not to maximize creativity. It is to improve:
-
-- explainability;
-- transparency;
-- reproducibility;
-- analytical discipline.
+| Language | Python |
+| Market data | Yahoo Finance / `yfinance` |
+| Data processing | pandas, NumPy |
+| Deep learning | PyTorch |
+| Forecasting models | LSTM, Transformer |
+| Financial documents | SEC filings |
+| RAG | Custom Clean Architecture RAG pipeline |
+| Embeddings | Ollama |
+| Vector database | Chroma |
+| Local LLM runtime | Ollama |
+| LLM | Qwen |
+| Architecture | Clean Architecture |
+| Version control | Git / GitHub |
 
 ---
 
-## Technology Stack
-
-| Layer | Technology | Responsibility |
-|---|---|---|
-| Programming language | Python | Core application development |
-| Data processing | Pandas and NumPy | Market-data transformation |
-| Deep learning | PyTorch | LSTM and Transformer forecasting |
-| Market data | Yahoo Finance | Historical price retrieval |
-| LLM runtime | Ollama | Local inference |
-| LLM | Qwen | Evidence-based report generation |
-| Architecture | Clean Architecture | Separation of concerns |
-| Version control | Git and GitHub | Source management |
-| Documentation | Markdown and PNG diagrams | Public and technical documentation |
-
-Technologies are isolated behind interfaces wherever practical, allowing future replacements with minimal impact on application logic.
-
----
-
-## Project Structure
+# Project Structure
 
 ```text
 ai-quant-research-platform/
 │
 ├── app/
+│   │
 │   ├── application/
-│   │   ├── llm/
+│   │   │
+│   │   ├── knowledge/
+│   │   │   └── knowledge_store.py
+│   │   │
+│   │   ├── retrieval/
+│   │   │   └── evidence_retriever.py
+│   │   │
 │   │   ├── prompts/
-│   │   ├── services/
-│   │   ├── agents/
-│   │   └── workflows/
+│   │   │   └── equity_prompt.py
+│   │   │
+│   │   └── services/
+│   │       ├── research_service.py
+│   │       ├── indicator_service.py
+│   │       ├── prediction_service.py
+│   │       └── filing_ingestion_service.py
 │   │
 │   ├── domain/
+│   │   │
 │   │   ├── entities/
-│   │   ├── forecast/
+│   │   │   ├── research_context.py
+│   │   │   ├── indicator_result.py
+│   │   │   ├── prediction_result.py
+│   │   │   ├── filing.py
+│   │   │   ├── fundamental_evidence.py
+│   │   │   └── retrieval_result.py
+│   │   │
 │   │   ├── indicators/
-│   │   ├── repositories/
-│   │   └── services/
+│   │   │   ├── interfaces/
+│   │   │   └── calculators/
+│   │   │
+│   │   └── repositories/
+│   │       ├── price_repository.py
+│   │       └── filing_repository.py
 │   │
 │   └── infrastructure/
+│       │
 │       ├── llm/
+│       │   └── ollama_provider.py
+│       │
 │       ├── market_data/
+│       │   └── yahoo_repository.py
+│       │
 │       ├── ml/
-│       ├── cloud/
-│       ├── mcp/
-│       ├── storage/
-│       └── vector_db/
+│       │   ├── forecast_model_factory.py
+│       │   └── ...
+│       │
+│       └── rag/
+│           ├── sec_filing_repository.py
+│           ├── sec_document_extractor.py
+│           ├── text_chunker.py
+│           ├── ollama_embedding_model.py
+│           ├── chroma_vector_store.py
+│           ├── vector_knowledge_store.py
+│           └── vector_evidence_retriever.py
 │
 ├── docs/
-│   ├── 01_introduction/
-│   ├── 02_architecture/
-│   ├── 03_developer_guide/
-│   ├── 04_research/
-│   ├── 05_release_notes/
 │   └── images/
+│       ├── architecture_v0.3.png
 │       ├── architecture_v0.4.png
-│       └── workflow_v0.4.png
+│       ├── architecture_v0.5.png
+│       ├── workflow_v0.4.png
+│       └── workflow_v0.5.png
 │
-├── reports/
-├── tests/
+├── data/
+│   └── chroma/                 # generated locally; ignored by Git
+│
 ├── main.py
 ├── test.py
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
-| Directory | Responsibility |
-|---|---|
-| `app/application` | Use-case orchestration and prompts |
-| `app/domain` | Entities, interfaces, and stable business concepts |
-| `app/infrastructure` | External providers and concrete implementations |
-| `docs` | Architecture, research methodology, developer guides, and release notes |
-| `reports` | Generated research output |
-| `tests` | Test and validation code |
-
-Reserved directories support the planned RAG, agent, storage, MCP, and cloud capabilities without forcing immediate implementation.
-
 ---
 
-## Engineering Decisions
+# Dependency Inversion in v0.5
 
-| Decision | Rationale |
-|---|---|
-| Forecast returns rather than prices | Returns generally have more suitable statistical properties for time-series modeling |
-| Present an implied price | A price is easier for human readers to interpret, while the model target remains return |
-| Compare with a naive baseline | A model must demonstrate value beyond a simple forecast |
-| Use a shared `ForecastModel` interface | Forecast implementations remain interchangeable |
-| Use `ForecastModelFactory` | Model construction and selection are centralized |
-| Inject `PredictionService` into `ResearchService` | Forecasting remains a separate application capability |
-| Keep LLM reasoning separate from calculations | Quantitative results remain deterministic and auditable |
-| Constrain the prompt | Financial claims remain grounded in supplied evidence |
-| Use Clean Architecture | Business logic remains independent of frameworks and providers |
-| Avoid unnecessary renaming | Stability is prioritized when a rename provides no material architectural value |
+The RAG subsystem is deliberately designed around abstractions.
 
----
-
-## Architecture Evolution
-
-QuantMind has evolved incrementally, with each version adding one major architectural capability.
+## Filing Access
 
 ```text
-v0.1  AI Research Pipeline MVP
-  │
-  ▼
-v0.2  Technical Indicator Engine
-  │
-  ▼
-v0.3  Return-Based LSTM Forecasting
-  │
-  ▼
-v0.4  Multi-Model Forecast Engine
-  │
-  ▼
-v0.5  Financial Knowledge Engine (RAG)
-  │
-  ▼
-v0.6  LangGraph Multi-Agent Research
-  │
-  ▼
-v0.7  FastAPI Service Platform
-  │
-  ▼
-v0.8  Cloud Deployment and CI/CD
-  │
-  ▼
-v0.9  MCP Integration
-  │
-  ▼
-v1.0  Production AI Quant Research Platform
+Application / Domain
+       |
+       v
+FilingRepository
+       ▲
+       │
+Infrastructure
+       |
+SECFilingRepository
 ```
 
-Each release is intended to extend the existing architecture rather than replace it.
+The application does not depend directly on SEC-specific implementation details.
 
 ---
 
-## Roadmap
+## Knowledge Storage
 
-### v0.5 — Financial Knowledge Engine
+```text
+Application
+       |
+       v
+KnowledgeStore
+       ▲
+       │
+Infrastructure
+       |
+VectorKnowledgeStore
+```
 
-Planned capabilities:
-
-- SEC 10-K retrieval;
-- SEC 10-Q retrieval;
-- earnings-call transcript ingestion;
-- financial-news retrieval;
-- document parsing and chunking;
-- embeddings;
-- vector storage;
-- Retrieval-Augmented Generation;
-- evidence-grounded fundamental analysis.
-
-### v0.6 — Multi-Agent Research Team
-
-Planned specialist roles:
-
-- Technical Analyst;
-- Forecast Analyst;
-- Fundamental Analyst;
-- Risk Analyst;
-- Portfolio Analyst;
-- Chief Investment Officer.
-
-LangGraph will coordinate the agents while preserving traceable, modular reasoning.
-
-### v0.7 — AI Research Platform
-
-Planned capabilities:
-
-- FastAPI backend;
-- interactive dashboard;
-- REST API;
-- report history;
-- portfolio analysis;
-- model selection;
-- authentication.
-
-### v0.8 — Cloud Deployment and CI/CD
-
-Planned capabilities:
-
-- Docker;
-- GitHub Actions;
-- automated testing;
-- continuous integration;
-- cloud deployment;
-- monitoring.
-
-### v0.9 — Model Context Protocol
-
-Planned integrations:
-
-- financial databases;
-- document repositories;
-- portfolio systems;
-- external AI tools;
-- enterprise knowledge bases.
-
-### v1.0 — Production AI Quant Research Platform
-
-The long-term objective is a unified platform integrating:
-
-- quantitative finance;
-- financial econometrics;
-- machine learning;
-- Retrieval-Augmented Generation;
-- multi-agent collaboration;
-- explainable AI;
-- APIs and cloud deployment;
-- production-minded software engineering.
+The ingestion service depends on the abstraction rather than directly on Chroma.
 
 ---
 
-## Quick Start
+## Evidence Retrieval
 
-### Prerequisites
+```text
+Application
+       |
+       v
+EvidenceRetriever
+       ▲
+       │
+Infrastructure
+       |
+VectorEvidenceRetriever
+```
 
-- Python 3.12 or compatible environment;
-- Git;
-- Ollama installed and running.
+`ResearchService` therefore does not need to know how embeddings or vector search work.
 
-### Clone the Repository
+This allows future replacement of:
+
+```text
+Chroma
+   ↓
+another vector database
+```
+
+or:
+
+```text
+Ollama embeddings
+   ↓
+another embedding provider
+```
+
+without redesigning the research workflow.
+
+---
+
+# v0.5 RAG Design
+
+The v0.5 RAG subsystem consists of two major workflows.
+
+## 1. Ingestion
+
+```text
+SECFilingRepository
+        ↓
+      Filing
+        ↓
+FilingIngestionService
+        ↓
+   KnowledgeStore
+        ↓
+VectorKnowledgeStore
+        ↓
+SECDocumentExtractor
+        ↓
+    TextChunker
+        ↓
+OllamaEmbeddingModel
+        ↓
+ChromaVectorStore
+```
+
+## 2. Retrieval
+
+```text
+Research Question
+        ↓
+EvidenceRetriever
+        ↓
+VectorEvidenceRetriever
+        ↓
+OllamaEmbeddingModel
+        ↓
+ChromaVectorStore
+        ↓
+FundamentalEvidence
+        ↓
+RetrievalResult
+```
+
+These workflows are intentionally separate.
+
+Documents can be ingested once and queried many times.
+
+---
+
+# Example Research Question
+
+A v0.5 research request can include a fundamental question such as:
+
+```text
+What are Apple's major business risks?
+```
+
+The RAG subsystem retrieves relevant SEC filing passages.
+
+Those passages are combined with technical and forecasting evidence before the LLM generates the final report.
+
+---
+
+# Example Report Structure
+
+QuantMind v0.5 produces an integrated report with eight sections:
+
+```text
+1. Executive Summary
+
+2. Trend Analysis
+
+3. Momentum Analysis
+
+4. Forecast Analysis
+
+5. Fundamental Evidence Analysis
+
+6. Cross-Evidence Assessment
+
+7. Risk Assessment
+
+8. Overall Research Outlook
+```
+
+The final report explicitly distinguishes between:
+
+- deterministic indicator evidence;
+- model-based forecast evidence;
+- retrieved fundamental evidence.
+
+---
+
+# Quick Start
+
+## 1. Clone the repository
 
 ```bash
 git clone https://github.com/sager2026/ai-quant-research-platform.git
 cd ai-quant-research-platform
 ```
 
-### Install Dependencies
+---
+
+## 2. Create a virtual environment
+
+Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+macOS / Linux:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+---
+
+## 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Install an Ollama Model
+---
 
-The current application is configured for a Qwen model. Install the exact model name used in your local `OllamaProvider` configuration.
+## 4. Install and start Ollama
 
-Example:
+QuantMind uses Ollama for local LLM inference and local embedding generation.
 
-```bash
-ollama pull qwen3:8b
+The current configuration uses:
+
+```text
+qwen3:8b
 ```
 
-### Run QuantMind
+for research synthesis and:
+
+```text
+embeddinggemma
+```
+
+for embeddings.
+
+Make sure the required models are available in your local Ollama environment before running the application.
+
+---
+
+## 5. SEC User-Agent
+
+SEC requests should identify the application and provide a valid contact address.
+
+When configuring `SECFilingRepository`, replace the placeholder:
+
+```python
+user_agent="QuantMind your-email@example.com"
+```
+
+with your own contact email.
+
+Do not commit personal credentials or private configuration to the repository.
+
+---
+
+## 6. Build the Local Filing Knowledge Base
+
+The v0.5 test workflow demonstrates SEC filing ingestion and retrieval.
+
+```bash
+python test.py
+```
+
+The ingestion process creates a local Chroma database under:
+
+```text
+data/chroma/
+```
+
+This directory contains generated vector-store data and is intentionally excluded from Git.
+
+---
+
+## 7. Run QuantMind
 
 ```bash
 python main.py
 ```
 
-The application will:
+The current example configuration runs research for:
 
-1. retrieve historical market prices;
-2. calculate technical indicators;
-3. train the selected forecasting model;
-4. evaluate the model against a naive baseline;
-5. build a structured research context;
-6. generate an AI-assisted equity research report.
+```text
+Ticker: AAPL
+Forecast model: transformer
+Research question: What are Apple's major business risks?
+```
 
----
-
-## Configuration
-
-### Select a Forecast Model
-
-In `main.py`:
+The model can be changed in `main.py` by changing:
 
 ```python
 MODEL_NAME = "transformer"
 ```
 
-or:
+to:
 
 ```python
 MODEL_NAME = "lstm"
 ```
 
-### Select a Ticker
+---
 
-```python
-TICKER = "AAPL"
+# Architecture Evolution
+
+QuantMind is being developed incrementally.
+
+```text
+v0.1
+AI Market Research MVP
+        ↓
+v0.2
+Technical Indicator Engine
+        ↓
+v0.3
+Deep-Learning Forecasting
+        ↓
+v0.4
+Multi-Model Forecast Engine
+        ↓
+v0.5
+Financial Knowledge Engine
+Retrieval-Augmented Generation
+        ↓
+Future
+Agentic Research Platform
 ```
 
-### Configure Ollama
-
-Ensure the model name passed to `OllamaProvider` matches a model installed locally.
-
-Example:
-
-```python
-llm = OllamaProvider(
-    model="qwen3:8b",
-)
-```
+Each version extends the architecture without discarding the responsibilities established in previous versions.
 
 ---
 
-## Example Output
+# Version History
 
-A typical run begins with:
+## v0.1 — AI Market Research MVP
 
-```text
-Ticker: AAPL
-Forecast model: transformer
-============================================================
-```
+Introduced:
 
-The generated Markdown report includes:
+- Yahoo Finance market data;
+- Ollama LLM integration;
+- AI-generated market analysis;
+- Markdown report generation;
+- initial Clean Architecture structure.
 
-```text
-1. Executive Summary
-2. Trend Analysis
-3. Momentum Analysis
-4. Transformer Forecast Analysis
-5. Signal Alignment
-6. Risk Assessment
-7. Overall Research Outlook
-```
+---
 
-The selected model name is propagated through the complete pipeline, so the report automatically displays either:
+## v0.2 — Technical Indicator Engine
 
-```text
-LSTM Forecast Analysis
-```
+Introduced:
 
-or:
+- SMA;
+- EMA;
+- RSI;
+- MACD;
+- `IndicatorService`;
+- deterministic technical-analysis pipeline.
 
-```text
-Transformer Forecast Analysis
-```
+---
 
-The report also includes:
+## v0.3 — Deep-Learning Forecasting
 
-- current price;
-- SMA, EMA, RSI, and MACD;
-- predicted next-day return;
-- mechanically implied next-day price;
+Introduced:
+
+- LSTM forecasting;
+- `PredictionService`;
+- `PredictionResult`;
 - validation RMSE and MAE;
-- naive baseline RMSE;
-- improvement over baseline;
-- model-aware risk interpretation;
-- an educational-use disclaimer.
+- naive baseline comparison;
+- forecast-aware research prompts.
 
 ---
 
-## Documentation
+## v0.4 — Multi-Model Forecast Engine
 
-The README is the public homepage of QuantMind. Detailed technical documentation is maintained under `docs/`.
+Introduced:
 
-| Documentation Area | Location |
-|---|---|
-| Project overview and philosophy | `docs/01_introduction/` |
-| Clean Architecture and design decisions | `docs/02_architecture/` |
-| Developer guides | `docs/03_developer_guide/` |
-| Forecasting and evaluation methodology | `docs/04_research/` |
-| Release history | `docs/05_release_notes/` |
-
-### Current README Figures
-
-| Diagram | Purpose |
-|---|---|
-| `docs/images/architecture_v0.4.png` | Current Clean Architecture overview |
-| `docs/images/workflow_v0.4.png` | Current runtime research workflow |
-
-Earlier diagrams may remain in `docs/images/` as project artifacts, but the README intentionally embeds only the two figures needed to explain the current release.
+- shared `ForecastModel` abstraction;
+- LSTM and Transformer implementations;
+- `ForecastModelFactory`;
+- model-independent `PredictionService`;
+- centralized model selection;
+- scalable forecasting architecture.
 
 ---
 
-## Contributing
+## v0.5 — Financial Knowledge Engine (RAG)
 
-Contributions are welcome in areas such as:
+Introduced:
 
-- quantitative finance;
-- financial econometrics;
-- forecasting models;
-- prompt engineering;
-- RAG;
-- LangGraph and AI agents;
-- software architecture;
-- tests;
-- documentation;
-- performance optimization.
-
-A typical contribution workflow:
-
-1. fork the repository;
-2. create a feature branch;
-3. implement and test the change;
-4. document architectural implications;
-5. open a pull request.
-
-Contributions should preserve the project's separation of responsibilities and evidence-first research philosophy.
+- SEC filing repository abstraction;
+- SEC filing ingestion;
+- `Filing` domain entity;
+- `FundamentalEvidence`;
+- `RetrievalResult`;
+- `KnowledgeStore`;
+- `EvidenceRetriever`;
+- SEC document extraction;
+- text chunking;
+- Ollama embeddings;
+- Chroma vector storage;
+- vector-backed knowledge storage;
+- semantic evidence retrieval;
+- integration of RAG evidence into `ResearchContext`;
+- integrated technical, forecast, and fundamental research synthesis.
 
 ---
 
-## License
+# Roadmap
 
-This project is licensed under the **MIT License**.
+## v0.6 — Agentic Research Workflow
 
-See the repository license file for the full terms.
+Planned areas include:
 
----
-
-## Disclaimer
-
-QuantMind is intended solely for:
-
-- research;
-- education;
-- software engineering demonstration.
-
-Nothing generated by QuantMind constitutes:
-
-- investment advice;
-- financial advice;
-- a trading recommendation;
-- portfolio-management advice;
-- a guarantee of future market performance.
-
-Forecasts are statistical estimates derived from historical data. Model performance may change across securities, sample periods, market regimes, and implementation choices.
-
-Users remain solely responsible for any investment decisions.
+- LangGraph orchestration;
+- explicit workflow state;
+- research nodes;
+- conditional routing;
+- reusable research tools;
+- more structured AI reasoning.
 
 ---
 
-## Beyond the Code
+## Future Financial Knowledge Extensions
 
-QuantMind began with a simple research pipeline:
+The v0.5 RAG architecture can be extended to:
 
-```text
-Market Data
-    │
-    ▼
-LLM
-    │
-    ▼
-Report
-```
+- SEC 10-Q filings;
+- earnings-call transcripts;
+- financial news;
+- additional financial documents;
+- richer metadata filtering;
+- hybrid retrieval;
+- reranking;
+- citation validation.
 
-It has evolved into a platform with:
+---
 
-- deterministic quantitative analysis;
-- return-based LSTM and Transformer forecasting;
-- shared model abstractions;
-- factory-based model selection;
-- objective baseline evaluation;
-- evidence-constrained AI reasoning;
-- versioned architecture documentation.
+## Future Platform Engineering
 
-The project is not an attempt to predict markets with certainty.
+Planned capabilities include:
 
-It is an exploration of how quantitative finance, machine learning, large language models, and sound software engineering can be combined into research systems that are:
+- FastAPI backend;
+- web research dashboard;
+- portfolio analysis;
+- multi-agent research teams;
+- MCP integration;
+- cloud deployment;
+- CI/CD;
+- observability;
+- automated testing;
+- model registry and experiment tracking.
 
-- explainable;
-- extensible;
-- reproducible;
-- maintainable.
+---
 
-> **QuantMind is not designed to replace investment judgment. It is designed to improve the transparency, reproducibility, and engineering quality of AI-assisted investment research.**
+# Design Goals
+
+QuantMind is designed around five long-term goals.
+
+### 1. Explainability
+
+Quantitative calculations, model forecasts, retrieved evidence, and AI reasoning should remain distinguishable.
+
+### 2. Modularity
+
+Individual components should be replaceable without redesigning the whole platform.
+
+### 3. Testability
+
+Core research logic should be testable independently of external providers.
+
+### 4. Extensibility
+
+The architecture should support additional models, data sources, retrieval engines, and agents.
+
+### 5. Research Integrity
+
+The system should distinguish between:
+
+- facts;
+- calculations;
+- model predictions;
+- retrieved evidence;
+- AI interpretation.
+
+---
+
+# Beyond the Code
+
+QuantMind is intended to demonstrate more than the ability to train a forecasting model or call an LLM API.
+
+The project focuses on the engineering problems involved in building an AI-powered financial research platform:
+
+- defining clean architectural boundaries;
+- separating domain logic from infrastructure;
+- applying Dependency Inversion;
+- designing model-independent forecasting services;
+- evaluating predictive models against meaningful baselines;
+- building a reusable RAG subsystem;
+- separating ingestion from retrieval;
+- representing retrieved evidence as structured domain data;
+- combining heterogeneous evidence streams;
+- constraining generative reasoning;
+- preserving explainability across the research pipeline.
+
+The goal is to evolve QuantMind from a quantitative research prototype into a scalable **AI-native investment research platform**.
+
+---
+
+# Disclaimer
+
+QuantMind is a research and educational project.
+
+It does not provide investment advice, financial advice, trading recommendations, or guaranteed investment outcomes.
+
+Forecasts and AI-generated interpretations may be inaccurate and should not be used as the sole basis for investment decisions.
 
 ---
 
 <div align="center">
 
-## QuantMind
+### QuantMind v0.5
 
-### *Where Quantitative Finance Meets AI Engineering*
+**Where Quantitative Finance Meets AI Engineering**
 
-**Building explainable AI for quantitative investment research.**
-
-**Current release:** `v0.4 — Multi-Model Forecast Engine`
+*Technical Analysis · Deep Learning · RAG · Financial Knowledge · Local LLMs · Clean Architecture*
 
 </div>
