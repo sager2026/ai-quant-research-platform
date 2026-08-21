@@ -1,3 +1,5 @@
+from knowledge_setup import prepare_knowledge
+
 from app.application.services.indicator_service import IndicatorService
 from app.application.services.prediction_service import PredictionService
 from app.application.services.research_service import ResearchService
@@ -25,23 +27,35 @@ MODEL_NAME = "transformer"
 # Research question used by the RAG subsystem.
 RESEARCH_QUESTION = "What are Apple's major business risks?"
 
+# SEC filing used to prepare fundamental knowledge.
+FILING_TYPE = "10-K"
+
 
 def main() -> None:
 
     # ---------------------------------------------------------
-    # 1. Market data
+    # 1. Fundamental knowledge preparation
+    # ---------------------------------------------------------
+
+    prepare_knowledge(
+        ticker=TICKER,
+        filing_type=FILING_TYPE,
+    )
+
+    # ---------------------------------------------------------
+    # 2. Market data
     # ---------------------------------------------------------
 
     price_repository = YahooRepository()
 
     # ---------------------------------------------------------
-    # 2. Technical indicators
+    # 3. Technical indicators
     # ---------------------------------------------------------
 
     indicator_service = IndicatorService()
 
     # ---------------------------------------------------------
-    # 3. Forecasting
+    # 4. Forecasting
     # ---------------------------------------------------------
 
     forecast_model = ForecastModelFactory.create(
@@ -53,7 +67,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 4. RAG retrieval
+    # 5. RAG retrieval
     # ---------------------------------------------------------
 
     embedding_model = OllamaEmbeddingModel(
@@ -72,7 +86,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 5. LLM
+    # 6. LLM
     # ---------------------------------------------------------
 
     llm = OllamaProvider(
@@ -80,7 +94,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 6. Research service
+    # 7. Research service
     # ---------------------------------------------------------
 
     research_service = ResearchService(
@@ -92,8 +106,10 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 7. Display configuration
+    # 8. Display configuration
     # ---------------------------------------------------------
+
+    print()
 
     print(
         f"Ticker: {TICKER}"
@@ -112,7 +128,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 8. Run complete QuantMind research workflow
+    # 9. Run complete QuantMind research workflow
     # ---------------------------------------------------------
 
     report = research_service.research(
@@ -121,7 +137,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 9. Display report
+    # 10. Display report
     # ---------------------------------------------------------
 
     print(report)
