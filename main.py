@@ -1,8 +1,9 @@
-from knowledge_setup import prepare_knowledge
-
 from app.application.services.indicator_service import IndicatorService
 from app.application.services.prediction_service import PredictionService
-from app.application.services.research_service import ResearchService
+
+from app.application.workflow.research_graph import (
+    create_research_graph,
+)
 
 from app.infrastructure.llm.ollama_provider import OllamaProvider
 from app.infrastructure.market_data.yahoo_repository import YahooRepository
@@ -17,6 +18,8 @@ from app.infrastructure.rag.chroma_vector_store import (
 from app.infrastructure.rag.vector_evidence_retriever import (
     VectorEvidenceRetriever,
 )
+
+from knowledge_setup import prepare_knowledge
 
 
 TICKER = "AAPL"
@@ -34,7 +37,7 @@ FILING_TYPE = "10-K"
 def main() -> None:
 
     # ---------------------------------------------------------
-    # 1. Fundamental knowledge preparation
+    # 1. Prepare fundamental knowledge
     # ---------------------------------------------------------
 
     prepare_knowledge(
@@ -43,19 +46,19 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 2. Market data
+    # 2. Market data dependency
     # ---------------------------------------------------------
 
     price_repository = YahooRepository()
 
     # ---------------------------------------------------------
-    # 3. Technical indicators
+    # 3. Technical analysis dependency
     # ---------------------------------------------------------
 
     indicator_service = IndicatorService()
 
     # ---------------------------------------------------------
-    # 4. Forecasting
+    # 4. Forecasting dependency
     # ---------------------------------------------------------
 
     forecast_model = ForecastModelFactory.create(
@@ -67,7 +70,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 5. RAG retrieval
+    # 5. Fundamental retrieval dependencies
     # ---------------------------------------------------------
 
     embedding_model = OllamaEmbeddingModel(
@@ -86,7 +89,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 6. LLM
+    # 6. LLM dependency
     # ---------------------------------------------------------
 
     llm = OllamaProvider(
@@ -94,10 +97,10 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 7. Research service
+    # 7. Build LangGraph research workflow
     # ---------------------------------------------------------
 
-    research_service = ResearchService(
+    research_graph = create_research_graph(
         price_repository=price_repository,
         indicator_service=indicator_service,
         prediction_service=prediction_service,
@@ -106,7 +109,16 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 8. Display configuration
+    # 8. Initial LangGraph research state
+    # ---------------------------------------------------------
+
+    initial_state = {
+        "ticker": TICKER,
+        "research_question": RESEARCH_QUESTION,
+    }
+
+    # ---------------------------------------------------------
+    # 9. Display configuration
     # ---------------------------------------------------------
 
     print()
@@ -128,16 +140,21 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 9. Run complete QuantMind research workflow
+    # 10. Run complete LangGraph research workflow
     # ---------------------------------------------------------
 
-    report = research_service.research(
-        ticker=TICKER,
-        research_question=RESEARCH_QUESTION,
+    result = research_graph.invoke(
+        initial_state
     )
 
     # ---------------------------------------------------------
-    # 10. Display report
+    # 11. Extract final report from ResearchState
+    # ---------------------------------------------------------
+
+    report = result["report"]
+
+    # ---------------------------------------------------------
+    # 12. Display report
     # ---------------------------------------------------------
 
     print(report)
