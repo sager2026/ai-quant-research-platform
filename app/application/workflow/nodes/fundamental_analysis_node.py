@@ -22,9 +22,14 @@ def create_fundamental_analysis_node(
             "research_question"
         ]
 
+        research_plan = state[
+            "research_plan"
+        ]
+
         retrieval = evidence_retriever.retrieve(
             ticker=ticker,
             query=research_question,
+            filing_types=research_plan.filing_types,
         )
 
         return {

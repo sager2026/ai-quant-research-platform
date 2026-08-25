@@ -2,71 +2,29 @@ from app.domain.entities.research_context import ResearchContext
 
 
 class EquityPrompt:
-    """Build a grounded multi-evidence equity research prompt."""
+    """
+    Build a grounded equity research prompt from
+    the evidence selected by the research workflow.
+    """
 
     @staticmethod
     def build(
         context: ResearchContext,
     ) -> str:
 
-        indicators = context.indicators
-        prediction = context.prediction
-        retrieval = context.retrieval
+        evidence_blocks = []
 
         # ---------------------------------------------------------
-        # Model evaluation
+        # Technical evidence
         # ---------------------------------------------------------
 
-        if prediction.beats_baseline:
-            model_status = (
-                f"The {prediction.model_name} model beats "
-                "the naive zero-return baseline."
-            )
-        else:
-            model_status = (
-                f"The {prediction.model_name} model does not beat "
-                "the naive zero-return baseline."
-            )
+        if context.indicators is not None:
 
-        # ---------------------------------------------------------
-        # Format retrieved fundamental evidence
-        # ---------------------------------------------------------
+            indicators = context.indicators
 
-        if retrieval.evidence:
-            fundamental_evidence = "\n\n".join(
-                (
-                    f"Evidence #{index}\n"
-                    f"Filing: {evidence.filing_type}\n"
-                    f"Date: {evidence.filing_date}\n"
-                    f"Text: {evidence.text}"
-                )
-                for index, evidence in enumerate(
-                    retrieval.evidence,
-                    start=1,
-                )
-            )
-        else:
-            fundamental_evidence = (
-                "No fundamental evidence was retrieved."
-            )
-
-        # ---------------------------------------------------------
-        # Build prompt
-        # ---------------------------------------------------------
-
-        return f"""
-You are a senior quantitative equity research analyst.
-
-Write a professional Markdown equity research report using ONLY
-the three evidence blocks supplied below.
-
-IMPORTANT:
-All three evidence blocks contain valid input data.
-Do not say that technical or forecast data is unavailable.
-
-
+            technical_block = f"""
 ====================
-EVIDENCE 1: TECHNICAL
+TECHNICAL EVIDENCE
 ====================
 
 Ticker: {context.ticker}
@@ -78,11 +36,35 @@ Current price: {context.current_price:.2f}
 MACD line: {indicators.macd.macd:.2f}
 MACD signal line: {indicators.macd.signal:.2f}
 MACD histogram: {indicators.macd.histogram:.2f}
+""".strip()
 
+            evidence_blocks.append(
+                technical_block
+            )
 
-===================
-EVIDENCE 2: FORECAST
-===================
+        # ---------------------------------------------------------
+        # Forecast evidence
+        # ---------------------------------------------------------
+
+        if context.prediction is not None:
+
+            prediction = context.prediction
+
+            if prediction.beats_baseline:
+                model_status = (
+                    f"The {prediction.model_name} model beats "
+                    "the naive zero-return baseline."
+                )
+            else:
+                model_status = (
+                    f"The {prediction.model_name} model does not "
+                    "beat the naive zero-return baseline."
+                )
+
+            forecast_block = f"""
+====================
+FORECAST EVIDENCE
+====================
 
 Model: {prediction.model_name}
 Forecast horizon: {prediction.forecast_horizon} trading day
@@ -99,18 +81,106 @@ Improvement over baseline: {prediction.improvement_over_baseline:.2%}
 
 Model evaluation:
 {model_status}
+""".strip()
 
+            evidence_blocks.append(
+                forecast_block
+            )
 
-======================
-EVIDENCE 3: FUNDAMENTAL
-======================
+        # ---------------------------------------------------------
+        # Fundamental evidence
+        # ---------------------------------------------------------
 
-Research question:
-{retrieval.query}
+        if context.retrieval is not None:
+
+            retrieval = context.retrieval
+
+            if retrieval.evidence:
+
+                fundamental_evidence = "\n\n".join(
+                    (
+                        f"Evidence #{index}\n"
+                        f"Filing: {evidence.filing_type}\n"
+                        f"Date: {evidence.filing_date}\n"
+                        f"Text: {evidence.text}"
+                    )
+                    for index, evidence in enumerate(
+                        retrieval.evidence,
+                        start=1,
+                    )
+                )
+
+            else:
+                fundamental_evidence = (
+                    "No relevant fundamental evidence "
+                    "was retrieved."
+                )
+
+            fundamental_block = f"""
+====================
+FUNDAMENTAL EVIDENCE
+====================
 
 Retrieved SEC filing evidence:
 
 {fundamental_evidence}
+""".strip()
+
+            evidence_blocks.append(
+                fundamental_block
+            )
+
+        # ---------------------------------------------------------
+        # Combine selected evidence
+        # ---------------------------------------------------------
+
+        if evidence_blocks:
+
+            evidence_text = "\n\n".join(
+                evidence_blocks
+            )
+
+        else:
+
+            evidence_text = (
+                "No analytical evidence was produced "
+                "for this research request."
+            )
+
+        # ---------------------------------------------------------
+        # Build final prompt
+        # ---------------------------------------------------------
+
+        return f"""
+You are a senior quantitative equity research analyst.
+
+Research objective:
+
+{context.research_question}
+
+Ticker:
+
+{context.ticker}
+
+Write a professional Markdown equity research report
+that directly answers the research objective using ONLY
+the evidence supplied below.
+
+Do not assume that technical, forecast, and fundamental
+evidence are all available.
+
+The QuantMind research workflow intentionally selected
+only the evidence considered relevant to this research
+objective.
+
+Do not describe an omitted evidence type as missing,
+unavailable, or a system failure.
+
+====================
+AVAILABLE EVIDENCE
+====================
+
+{evidence_text}
 
 
 ====================
@@ -119,145 +189,97 @@ ANALYSIS RULES
 
 1. Use only the evidence supplied above.
 
-2. Treat the three evidence streams separately:
-   - Technical evidence describes the current indicator state.
-   - Forecast evidence describes the next-day model forecast.
-   - SEC filing evidence describes fundamental business risks
-     that may operate over a longer horizon.
+2. Directly answer the stated research objective.
 
-3. Do not claim statistical significance or insignificance.
+3. Analyze only evidence streams that are actually supplied.
+
+4. Technical evidence describes the current indicator state.
+
+5. Forecast evidence describes the supplied model forecast
+   over its stated forecast horizon.
+
+6. SEC filing evidence describes company fundamentals,
+   risks, financial conditions, operations, or other
+   filing-based information.
+
+7. Do not claim statistical significance or insignificance.
    RMSE and MAE are historical validation-error measures,
    not confidence intervals.
 
-4. An overbought or oversold RSI describes the current condition only.
-   Do not infer that it predicts a reversal.
+8. An overbought or oversold RSI describes the current
+   condition only. Do not infer that it predicts a reversal.
 
-5. Do not claim that SEC fundamental risks cause, confirm, support,
-   or contradict current technical signals or the next-day forecast
-   unless the supplied evidence explicitly establishes that relationship.
+9. Do not claim that SEC fundamental evidence causes,
+   confirms, supports, or contradicts technical signals
+   or model forecasts unless the supplied evidence
+   explicitly establishes that relationship.
 
-6. Do not fabricate facts, news, macroeconomic information,
-   support/resistance levels, company strategies, or recommendations.
-   
-7. A single SMA and EMA observation supports only their current
-   relative ordering. Do not infer the slope, direction, or movement
-   of either moving average from one observation.
+10. Do not fabricate facts, news, macroeconomic information,
+    support/resistance levels, company strategies,
+    management actions, or recommendations.
 
-8. A positive or negative MACD histogram describes its current sign
-   only. Do not say momentum is declining, increasing, strengthening,
-   weakening, accelerating, or decelerating without historical
-   MACD observations.
+11. A single SMA and EMA observation supports only their
+    current relative ordering. Do not infer their slope,
+    movement, or a crossover from one observation.
 
-9. Do not classify RMSE or MAE as low, moderate, high, large, or small
-   unless a benchmark for that classification is supplied.
+12. A positive or negative MACD histogram describes its
+    current sign only. Do not infer strengthening,
+    weakening, acceleration, or deceleration without
+    historical MACD observations.
 
-10. When describing technical evidence based only on the supplied
-    current observations, prefer terms such as "current technical
-    configuration" or "current technical condition" rather than
-    claiming that a trend is developing or changing.
+13. Do not classify RMSE or MAE as low, moderate, high,
+    large, or small unless a benchmark for that
+    classification is supplied.
+
+14. When multiple evidence streams are supplied, keep their
+    different analytical horizons conceptually separate.
+
+15. When citing fundamental evidence, refer to the relevant
+    Evidence # numbers.
+
 
 ====================
-REQUIRED REPORT
+REPORT STRUCTURE
 ====================
 
-Produce EXACTLY these eight sections:
+Adapt the report structure to the research objective and
+the evidence actually supplied.
 
+Always include:
 
 ## 1. Executive Summary
 
-Summarize the current technical condition, the forecast,
-model performance relative to the baseline, and the main
-fundamental risks found in the SEC evidence.
+Directly answer the research objective and summarize the
+most important available evidence.
 
+Then include ONLY the relevant analytical sections:
 
-## 2. Trend Analysis
+- Technical Analysis
+- Forecast Analysis
+- Fundamental Evidence Analysis
+- Cross-Evidence Assessment
 
-Analyze:
+Include Cross-Evidence Assessment only when two or more
+different evidence streams are supplied.
 
-- Current price relative to SMA
-- Current price relative to EMA
-- SMA relative to EMA
+Then include:
 
-Use only the current observations.
-Do not infer a crossover or changes over time.
+## Risk Assessment
 
+Discuss only risks or limitations supported by the
+available evidence.
 
-## 3. Momentum Analysis
+## Overall Research Conclusion
 
-Analyze:
+Provide a concise conclusion that directly addresses
+the original research objective.
 
-- RSI
-- MACD line relative to signal line
-- Sign of MACD histogram
-
-Do not infer an impending reversal from an overbought
-or oversold RSI.
-
-
-## 4. {prediction.model_name} Forecast Analysis
-
-Analyze:
-
-- Predicted next-day return
-- Implied next-day price
-- Forecast direction
-- Validation RMSE and MAE
-- Performance relative to the naive baseline
-
-A small baseline improvement should be described as economically
-limited, not statistically insignificant.
-
-
-## 5. Fundamental Evidence Analysis
-
-Answer the research question using only the retrieved SEC evidence.
-
-Identify the most important business risks and cite the relevant
-Evidence # numbers in the discussion.
-
-Do not invent management actions or mitigation strategies.
-
-
-## 6. Cross-Evidence Assessment
-
-Compare the technical condition with the next-day forecast.
-
-Then discuss the SEC fundamental evidence separately because it
-generally operates over a different horizon.
-
-Do not force the fundamental evidence to agree or disagree with
-the short-horizon quantitative evidence.
-
-
-## 7. Risk Assessment
-
-Discuss:
-
-- Forecast uncertainty
-- Validation errors
-- Baseline improvement
-- Current RSI condition
-- Short forecast horizon
-- Fundamental risks identified in the SEC evidence
-
-Keep quantitative and fundamental risks conceptually separate.
-
-
-## 8. Overall Research Outlook
-
-Classify the overall outlook as exactly one of:
-
-- Bullish
-- Moderately Bullish
-- Neutral
-- Moderately Bearish
-- Bearish
-
-Explain the classification using the three evidence streams while
-acknowledging their different analytical horizons.
+Do not force a Bullish/Bearish classification when the
+research objective does not call for an overall market
+outlook.
 
 End with exactly:
 
 "This report is for research and educational purposes only and does not
 constitute investment advice."
-"""
+""".strip()

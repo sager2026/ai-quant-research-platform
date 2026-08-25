@@ -10,5 +10,6 @@ class EvidenceRetriever(ABC):
         self,
         ticker: str,
         query: str,
+        filing_types: list[str] | None = None,
     ) -> RetrievalResult:
         pass

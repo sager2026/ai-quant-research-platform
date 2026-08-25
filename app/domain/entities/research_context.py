@@ -10,13 +10,18 @@ from app.domain.entities.retrieval_result import RetrievalResult
 @dataclass
 class ResearchContext:
     """
-    Contains all structured information required
-    to generate an equity research report.
+    Contains the structured evidence available
+    for generating an equity research report.
+
+    Analytical components may be absent when
+    they are not selected by the research plan.
     """
 
     ticker: str
-    current_price: float
-    history: pd.DataFrame
-    indicators: IndicatorResult
-    prediction: PredictionResult
-    retrieval: RetrievalResult
+    research_question: str
+
+    current_price: float | None = None
+    history: pd.DataFrame | None = None
+    indicators: IndicatorResult | None = None
+    prediction: PredictionResult | None = None
+    retrieval: RetrievalResult | None = None

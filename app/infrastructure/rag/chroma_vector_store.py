@@ -40,17 +40,40 @@ class ChromaVectorStore:
         self,
         query_embedding: list[float],
         ticker: str,
+        filing_types: list[str] | None = None,
         top_k: int = 5,
     ) -> list[dict]:
+
+        where = {
+            "ticker": ticker.upper()
+        }
+
+        if filing_types:
+
+            normalized_filing_types = [
+                filing_type.upper()
+                for filing_type in filing_types
+            ]
+
+            where = {
+                "$and": [
+                    {
+                        "ticker": ticker.upper()
+                    },
+                    {
+                        "filing_type": {
+                            "$in": normalized_filing_types
+                        }
+                    },
+                ]
+            }
 
         results = self.collection.query(
             query_embeddings=[
                 query_embedding
             ],
             n_results=top_k,
-            where={
-                "ticker": ticker.upper()
-            },
+            where=where,
             include=[
                 "documents",
                 "metadatas",

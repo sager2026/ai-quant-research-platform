@@ -35,6 +35,7 @@ class VectorEvidenceRetriever(EvidenceRetriever):
         self,
         ticker: str,
         query: str,
+        filing_types: list[str] | None = None,
     ) -> RetrievalResult:
 
         # Convert the research question into an embedding
@@ -46,6 +47,7 @@ class VectorEvidenceRetriever(EvidenceRetriever):
         matches = self.vector_store.search(
             query_embedding=query_embedding,
             ticker=ticker,
+            filing_types=filing_types,
             top_k=self.top_k,
         )
 

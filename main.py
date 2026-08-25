@@ -27,23 +27,31 @@ TICKER = "AAPL"
 # Change only this value to switch forecasting models.
 MODEL_NAME = "transformer"
 
-# Research question used by the RAG subsystem.
-RESEARCH_QUESTION = "What are Apple's major business risks?"
+# Natural-language research objective.
+RESEARCH_QUESTION = (
+    "Give me an integrated outlook for Apple using "
+    "technical, forecast, and fundamental evidence."
+)
 
-# SEC filing used to prepare fundamental knowledge.
-FILING_TYPE = "10-K"
+# SEC filing types available to the Research Supervisor.
+FILING_TYPES = [
+    "10-K",
+    "10-Q",
+]
 
 
 def main() -> None:
 
     # ---------------------------------------------------------
-    # 1. Prepare fundamental knowledge
+    # 1. Prepare available fundamental knowledge
     # ---------------------------------------------------------
 
-    prepare_knowledge(
-        ticker=TICKER,
-        filing_type=FILING_TYPE,
-    )
+    for filing_type in FILING_TYPES:
+
+        prepare_knowledge(
+            ticker=TICKER,
+            filing_type=filing_type,
+        )
 
     # ---------------------------------------------------------
     # 2. Market data dependency
@@ -97,7 +105,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 7. Build LangGraph research workflow
+    # 7. Build agentic LangGraph research workflow
     # ---------------------------------------------------------
 
     research_graph = create_research_graph(
@@ -118,7 +126,7 @@ def main() -> None:
     }
 
     # ---------------------------------------------------------
-    # 9. Display configuration
+    # 9. Display research request
     # ---------------------------------------------------------
 
     print()
@@ -140,7 +148,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 10. Run complete LangGraph research workflow
+    # 10. Run agentic LangGraph research workflow
     # ---------------------------------------------------------
 
     result = research_graph.invoke(
@@ -148,13 +156,51 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 11. Extract final report from ResearchState
+    # 11. Display Supervisor decision
     # ---------------------------------------------------------
 
-    report = result["report"]
+    plan = result[
+        "research_plan"
+    ]
+
+    print()
+    print("Research Supervisor Plan")
+    print("-" * 60)
+
+    print(
+        f"Technical analysis:   "
+        f"{plan.use_technical}"
+    )
+
+    print(
+        f"Forecast analysis:    "
+        f"{plan.use_forecast}"
+    )
+
+    print(
+        f"Fundamental analysis: "
+        f"{plan.use_fundamental}"
+    )
+
+    print(
+        f"SEC filing types:     "
+        f"{plan.filing_types}"
+    )
+
+    print(
+        "=" * 60
+    )
 
     # ---------------------------------------------------------
-    # 12. Display report
+    # 12. Extract final report
+    # ---------------------------------------------------------
+
+    report = result[
+        "report"
+    ]
+
+    # ---------------------------------------------------------
+    # 13. Display final report
     # ---------------------------------------------------------
 
     print(report)
