@@ -1,13 +1,23 @@
-from app.application.services.indicator_service import IndicatorService
-from app.application.services.prediction_service import PredictionService
+from app.application.services.indicator_service import (
+    IndicatorService,
+)
+from app.application.services.prediction_service import (
+    PredictionService,
+)
 
 from app.application.workflow.research_graph import (
     create_research_graph,
 )
 
-from app.infrastructure.llm.ollama_provider import OllamaProvider
-from app.infrastructure.market_data.yahoo_repository import YahooRepository
-from app.infrastructure.ml.forecast_model_factory import ForecastModelFactory
+from app.infrastructure.llm.ollama_provider import (
+    OllamaProvider,
+)
+from app.infrastructure.market_data.yahoo_repository import (
+    YahooRepository,
+)
+from app.infrastructure.ml.forecast_model_factory import (
+    ForecastModelFactory,
+)
 
 from app.infrastructure.rag.ollama_embedding_model import (
     OllamaEmbeddingModel,
@@ -19,8 +29,10 @@ from app.infrastructure.rag.vector_evidence_retriever import (
     VectorEvidenceRetriever,
 )
 
-from knowledge_setup import prepare_knowledge
 
+# =============================================================
+# Research configuration
+# =============================================================
 
 TICKER = "AAPL"
 
@@ -28,45 +40,27 @@ TICKER = "AAPL"
 MODEL_NAME = "transformer"
 
 # Natural-language research objective.
+
 RESEARCH_QUESTION = (
-    "Give me an integrated outlook for Apple using "
-    "technical, forecast, and fundamental evidence."
+    "What are Apple's recent business risks?"
 )
-
-# SEC filing types available to the Research Supervisor.
-FILING_TYPES = [
-    "10-K",
-    "10-Q",
-]
-
 
 def main() -> None:
 
     # ---------------------------------------------------------
-    # 1. Prepare available fundamental knowledge
-    # ---------------------------------------------------------
-
-    for filing_type in FILING_TYPES:
-
-        prepare_knowledge(
-            ticker=TICKER,
-            filing_type=filing_type,
-        )
-
-    # ---------------------------------------------------------
-    # 2. Market data dependency
+    # 1. Market data dependency
     # ---------------------------------------------------------
 
     price_repository = YahooRepository()
 
     # ---------------------------------------------------------
-    # 3. Technical analysis dependency
+    # 2. Technical analysis dependency
     # ---------------------------------------------------------
 
     indicator_service = IndicatorService()
 
     # ---------------------------------------------------------
-    # 4. Forecasting dependency
+    # 3. Forecasting dependency
     # ---------------------------------------------------------
 
     forecast_model = ForecastModelFactory.create(
@@ -78,7 +72,14 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 5. Fundamental retrieval dependencies
+    # 4. Fundamental retrieval dependencies
+    #
+    # SEC filings are prepared separately by the knowledge
+    # ingestion workflow and stored persistently in Chroma.
+    #
+    # The online research workflow only retrieves evidence
+    # when the Research Supervisor selects fundamental
+    # analysis.
     # ---------------------------------------------------------
 
     embedding_model = OllamaEmbeddingModel(
@@ -97,15 +98,23 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 6. LLM dependency
+    # 5. LLM dependency
+    #
+    # qwen3:8b supports a much larger context window, but
+    # Ollama otherwise defaults to a smaller runtime context.
+    #
+    # 16,384 tokens provides sufficient room for integrated
+    # multi-agent synthesis while avoiding unnecessary use
+    # of the model's full context capacity.
     # ---------------------------------------------------------
 
     llm = OllamaProvider(
-        model="qwen3:8b"
+        model="qwen3:8b",
+        num_ctx=16384,
     )
 
     # ---------------------------------------------------------
-    # 7. Build agentic LangGraph research workflow
+    # 6. Build multi-agent LangGraph research workflow
     # ---------------------------------------------------------
 
     research_graph = create_research_graph(
@@ -117,7 +126,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 8. Initial LangGraph research state
+    # 7. Initial LangGraph research state
     # ---------------------------------------------------------
 
     initial_state = {
@@ -126,7 +135,7 @@ def main() -> None:
     }
 
     # ---------------------------------------------------------
-    # 9. Display research request
+    # 8. Display research request
     # ---------------------------------------------------------
 
     print()
@@ -148,7 +157,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 10. Run agentic LangGraph research workflow
+    # 9. Run multi-agent LangGraph research workflow
     # ---------------------------------------------------------
 
     result = research_graph.invoke(
@@ -156,7 +165,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 11. Display Supervisor decision
+    # 10. Display Research Supervisor decision
     # ---------------------------------------------------------
 
     plan = result[
@@ -192,7 +201,7 @@ def main() -> None:
     )
 
     # ---------------------------------------------------------
-    # 12. Extract final report
+    # 11. Extract final report
     # ---------------------------------------------------------
 
     report = result[
@@ -200,7 +209,7 @@ def main() -> None:
     ]
 
     # ---------------------------------------------------------
-    # 13. Display final report
+    # 12. Display final report
     # ---------------------------------------------------------
 
     print(report)

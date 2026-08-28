@@ -2,201 +2,91 @@
 
 > **Where Quantitative Finance Meets AI Engineering.**
 
-QuantMind is an open-source **AI Quant Research Platform** that integrates quantitative finance, financial econometrics, technical analysis, machine-learning forecasting, SEC filing retrieval, and LLM-driven reasoning into a unified investment research workflow.
+QuantMind is an open-source **Financial AI Research Platform** that combines quantitative finance, financial econometrics, technical analysis, machine-learning forecasting, SEC filing retrieval, and LLM-driven multi-agent reasoning into a unified research workflow.
 
-The platform is designed as an **explainable research system rather than an algorithmic trading engine**. Its objective is to combine deterministic quantitative analytics with evidence-grounded AI reasoning while maintaining clear architectural boundaries between domain logic, application orchestration, infrastructure, and language-model capabilities.
-
-QuantMind currently supports:
-
-- Market-data acquisition
-- Technical indicator analysis
-- Time-series forecasting
-- Transformer-based return forecasting
-- SEC 10-K and 10-Q ingestion
-- Embedding-based semantic retrieval
-- Evidence-grounded RAG
-- LangGraph stateful orchestration
-- LLM-based research planning
-- Conditional research execution
-- Adaptive multi-evidence synthesis
-- Markdown equity research reports
+The platform is designed for **AI-assisted investment research, explainable financial intelligence, and decision support** rather than autonomous trading.
 
 ---
 
-# Current Version
+## Current Milestone — v0.8 Multi-Agent Research System
 
-## QuantMind v0.7 – Agentic Research Planning & Conditional Execution
+Version 0.8 evolves QuantMind from a supervisor-driven conditional workflow into a **multi-agent research system**.
 
-Version 0.7 introduces an **LLM Research Supervisor** that interprets a natural-language research objective and creates a structured `ResearchPlan`.
+The current system includes:
 
-Instead of executing every analytical component for every question, QuantMind can now determine which evidence streams are relevant and conditionally execute only the required research components.
-
-For example:
-
-```text
-Question:
-"Is Apple technically oversold?"
-
-ResearchPlan:
-use_technical   = True
-use_forecast    = False
-use_fundamental = False
-filing_types    = []
-
-Execution:
-Market Data
-    ↓
-Technical Analysis
-    ↓
-Synthesis
-```
-
-A fundamentally oriented question produces a different research path:
-
-```text
-Question:
-"What are Apple's recent business risks?"
-
-ResearchPlan:
-use_technical   = False
-use_forecast    = False
-use_fundamental = True
-filing_types    = ["10-Q"]
-
-Execution:
-10-Q Retrieval
-    ↓
-Fundamental Analysis
-    ↓
-Synthesis
-```
-
-An integrated research objective can activate all available evidence streams:
-
-```text
-Question:
-"Give me an integrated outlook for Apple using
-technical, forecast, and fundamental evidence."
-
-ResearchPlan:
-use_technical   = True
-use_forecast    = True
-use_fundamental = True
-filing_types    = ["10-K", "10-Q"]
-```
-
-This represents the transition from a fixed research pipeline toward an **agentic research architecture**.
+- LLM Research Supervisor
+- Structured `ResearchPlan`
+- Conditional LangGraph routing
+- Technical evidence generation
+- Transformer-based forecast evidence
+- SEC 10-K / 10-Q RAG
+- Technical Research Agent
+- Forecast Research Agent
+- Fundamental Research Agent
+- Synthesis Research Agent
+- Structured specialist-agent results
+- Typed `ResearchState`
+- Curated `ResearchContext`
+- Persistent Chroma knowledge base
+- Separate knowledge-ingestion and online-research workflows
+- Evidence-grounded final synthesis
+- Ollama / Qwen local LLM integration
 
 ---
 
-# Core Agentic Model
+# Architecture
 
-QuantMind v0.7 follows the conceptual model:
+![QuantMind v0.8 Architecture](docs/images/architecture_v0.8.png)
 
-```text
-LLM + Tools + State + Control Loop
-        =
-Reasoning + Action + Memory + Workflow
-```
-
-Within QuantMind:
+The v0.8 architecture separates four different concerns:
 
 ```text
-LLM Research Supervisor
+Research Planning
         ↓
-Reasoning
-"What analysis is required?"
-
-ResearchPlan
+Evidence Production
         ↓
-Structured Decision
-
-ResearchState
+Specialist-Agent Interpretation
         ↓
-Shared Workflow State
-
-LangGraph
-        ↓
-Conditional Control / Orchestration
-
-Research Nodes
-        ↓
-Actions / Analytical Tools
-
-Synthesis LLM
-        ↓
-Evidence-Grounded Research Report
+Final Synthesis
 ```
 
-The LLM does not directly control infrastructure such as the vector database or market-data provider.
-
-Instead, the LLM produces structured decisions, while deterministic application code translates those decisions into controlled workflow execution.
-
----
-
-# System Architecture
-
-![QuantMind v0.7 Architecture](docs/images/architecture_v0.7.png)
-
-QuantMind follows **Clean Architecture principles**, separating business concepts from application orchestration and infrastructure implementations.
-
-```text
-Presentation Layer
-        ↓
-Agentic Application Layer
-        ↓
-Domain Layer
-        ↕
-Infrastructure Layer
-```
-
-The architecture allows forecasting models, LLM providers, market-data providers, retrieval systems, and future research agents to evolve independently.
-
----
-
-# Agentic Application Layer
-
-The v0.7 application layer contains the orchestration logic responsible for transforming a research question into an executable research workflow.
-
-Major components include:
-
-```text
-ResearchSupervisor
-ResearchPlan
-ResearchState
-LangGraph Research Workflow
-Conditional Routing
-Technical Analysis Node
-Forecast Analysis Node
-Fundamental Analysis Node
-Synthesis Node
-```
-
-The central sequence is:
+The core execution model is:
 
 ```text
 Research Question
         ↓
-Research Supervisor
+ResearchSupervisor
         ↓
 ResearchPlan
         ↓
-ResearchState
-        ↓
 Conditional LangGraph Routing
         ↓
-Selected Research Components
+Selected Evidence Pipelines
         ↓
-Evidence-Grounded Synthesis
+Specialist Research Agents
+        ↓
+Structured Agent Results
+        ↓
+ResearchState
+        ↓
+SynthesisNode
+        ↓
+SynthesisResearchAgent
+        ↓
+ResearchContext
+        ↓
+Final Research Report
 ```
+
+This separation keeps deterministic computation, retrieved evidence, probabilistic reasoning, and final synthesis conceptually distinct.
 
 ---
 
 # Research Supervisor
 
-The `ResearchSupervisor` is responsible for interpreting the research objective.
+The `ResearchSupervisor` interprets the research objective and decides which research capabilities should execute.
 
-It uses an LLM to decide whether the request requires:
+It uses an LLM to determine whether the request requires:
 
 ```text
 Technical analysis
@@ -217,16 +107,16 @@ ResearchPlan(
 )
 ```
 
-This separates probabilistic LLM reasoning from deterministic workflow execution.
+This separates probabilistic planning from deterministic workflow execution:
 
 ```text
 Natural-Language Question
-          ↓
-      LLM Reasoning
-          ↓
-     ResearchPlan
-          ↓
-Deterministic Routing
+        ↓
+LLM Planning
+        ↓
+ResearchPlan
+        ↓
+Deterministic LangGraph Routing
 ```
 
 ---
@@ -259,118 +149,177 @@ ResearchPlan(
 )
 ```
 
-The LangGraph workflow consumes this plan and routes execution accordingly.
+The LangGraph workflow consumes the plan and selects only the required research branches.
 
 ---
 
 # ResearchState
 
-QuantMind uses a typed `ResearchState` as the shared state of the LangGraph workflow.
-
-Conceptually:
+QuantMind uses a typed `ResearchState` as the shared coordination state of the LangGraph workflow.
 
 ```text
 ResearchState
-│
 ├── Input
 │   ├── ticker
 │   └── research_question
-│
 ├── Planning
 │   └── research_plan
-│
 ├── Market Data
 │   ├── history
 │   └── current_price
-│
-├── Technical Evidence
-│   └── indicators
-│
-├── Forecast Evidence
-│   └── prediction
-│
-├── Fundamental Evidence
+├── Evidence
+│   ├── indicators
+│   ├── prediction
 │   └── retrieval
-│
+├── Specialist Interpretation
+│   ├── technical_agent_result
+│   ├── forecast_agent_result
+│   └── fundamental_agent_result
 └── Output
     └── report
 ```
 
-`ResearchPlan` is therefore a Domain entity while an instance of it is stored inside `ResearchState` during workflow execution.
+`ResearchState` represents **everything the workflow knows during execution**.
 
 The state is progressively enriched as selected nodes execute.
 
 ```text
 Initial State
-    │
-    ├── ticker
-    └── research_question
-            ↓
+    ↓
 Supervisor
-            ↓
-    + research_plan
-            ↓
-Selected Analysis Nodes
-            ↓
-    + analytical evidence
-            ↓
+    + ResearchPlan
+    ↓
+Evidence Nodes
+    + structured evidence
+    ↓
+Specialist Agents
+    + structured interpretations
+    ↓
 Synthesis
-            ↓
     + final report
 ```
 
 ---
 
+# Multi-Agent Research System
+
+Version 0.8 introduces specialized research agents for each analytical domain.
+
+## Technical Research Agent
+
+```text
+MarketDataNode
+        ↓
+TechnicalAnalysisNode
+        ↓
+IndicatorService
+        ↓
+IndicatorResult
+        ↓
+TechnicalAgentNode
+        ↓
+TechnicalResearchAgent
+        ↓
+TechnicalAgentResult
+```
+
+The Technical Research Agent interprets deterministic indicators while remaining constrained by the supplied evidence.
+
+## Forecast Research Agent
+
+```text
+MarketDataNode
+        ↓
+ForecastAnalysisNode
+        ↓
+PredictionService
+        ↓
+PredictionResult
+        ↓
+ForecastAgentNode
+        ↓
+ForecastResearchAgent
+        ↓
+ForecastAgentResult
+```
+
+The Forecast Research Agent interprets structured model output and validation metrics without treating forecasts as observed facts.
+
+## Fundamental Research Agent
+
+```text
+FundamentalAnalysisNode
+        ↓
+EvidenceRetriever
+        ↓
+RetrievalResult
+        ↓
+FundamentalAgentNode
+        ↓
+FundamentalResearchAgent
+        ↓
+FundamentalAgentResult
+```
+
+Evidence retrieval remains outside the reasoning agent so retrieval quality and LLM interpretation remain independently observable.
+
+## Synthesis Research Agent
+
+```text
+ResearchState
+        ↓
+SynthesisNode
+        ↓
+ResearchContext
+        ↓
+SynthesisResearchAgent
+        ↓
+EquityPrompt
+        ↓
+LLM
+        ↓
+Final Report
+```
+
+The Synthesis Research Agent combines available specialist interpretations while checking them against underlying evidence.
+
+---
+
 # Research Workflow
 
-![QuantMind v0.7 Research Workflow](docs/images/workflow_v0.7.png)
+![QuantMind v0.8 Research Workflow](docs/images/workflow_v0.8.png)
 
-The v0.7 workflow is **stateful and conditional**.
+The v0.8 workflow is **stateful, conditional, multi-agent, and intentionally sequential**.
 
-The Research Supervisor first interprets the question and generates a `ResearchPlan`.
+Conditional execution determines **which branches run**.
 
-LangGraph then reads that plan from `ResearchState` and routes execution to the required components.
+Sequential execution determines **the order in which selected branches run**.
+
+The current design intentionally avoids parallel execution so that multi-agent reasoning can remain easy to inspect and debug.
 
 Conceptually:
 
 ```text
 Research Question
         ↓
-LLM Research Supervisor
+ResearchSupervisor
         ↓
 ResearchPlan
         ↓
-stored in ResearchState
-        ↓
 Conditional Routing
-        │
-        ├──────── Technical required?
-        │              ↓
-        │         Market Data
-        │              ↓
-        │      Technical Indicators
-        │
-        ├──────── Forecast required?
-        │              ↓
-        │         Market Data
-        │              ↓
-        │       Forecast Model
-        │
-        └──────── Fundamental required?
-                       ↓
-                 Filing Selection
-                  ┌────┴────┐
-                  ↓         ↓
-                10-K      10-Q
-                  └────┬────┘
-                       ↓
-                Vector Retrieval
-                       ↓
-               Fundamental Evidence
-
-Selected evidence
         ↓
-Adaptive Synthesis
+┌───────────────────────────────────────────────┐
+│ Technical selected?                          │
+│   Market Data → Indicators → Technical Agent │
+│                                               │
+│ Forecast selected?                           │
+│   Market Data → Forecast → Forecast Agent    │
+│                                               │
+│ Fundamental selected?                        │
+│   SEC Retrieval → Fundamental Agent          │
+└───────────────────────────────────────────────┘
+        ↓
+Synthesis Research Agent
         ↓
 Research Report
 ```
@@ -379,9 +328,11 @@ Research Report
 
 # Conditional Execution
 
-Version 0.6 introduced LangGraph orchestration, but the analytical workflow was predetermined.
+Version 0.6 introduced LangGraph orchestration with a predetermined analytical workflow.
 
-Version 0.7 introduces **objective-dependent execution**.
+Version 0.7 introduced objective-dependent planning.
+
+Version 0.8 adds specialist-agent interpretation to each selected research branch.
 
 ```text
 v0.6
@@ -406,12 +357,28 @@ ResearchPlan
    ↓
 Conditional Workflow
    ↓
-Only Relevant Analysis
+Selected Evidence
    ↓
 Synthesis
 ```
 
-This distinction is central to QuantMind's evolution toward an agentic research system.
+```text
+v0.8
+
+Question
+   ↓
+LLM Research Supervisor
+   ↓
+ResearchPlan
+   ↓
+Conditional Evidence Pipelines
+   ↓
+Specialist Research Agents
+   ↓
+Structured Agent Results
+   ↓
+Synthesis Research Agent
+```
 
 ---
 
@@ -424,7 +391,7 @@ QuantMind provides deterministic technical-analysis calculations including:
 - Relative Strength Index (RSI)
 - Moving Average Convergence Divergence (MACD)
 
-Technical indicators are implemented behind domain interfaces and coordinated by the application-layer `IndicatorService`.
+Technical indicators are coordinated by the application-layer `IndicatorService`.
 
 ```text
 Market Data
@@ -432,16 +399,15 @@ Market Data
 Price Series
     ↓
 IndicatorService
-    ↓
-SMA
-EMA
-RSI
-MACD
+    ├── SMA
+    ├── EMA
+    ├── RSI
+    └── MACD
     ↓
 IndicatorResult
 ```
 
-Technical evidence is executed only when required by the `ResearchPlan`.
+Technical evidence is produced only when required by the `ResearchPlan`.
 
 ---
 
@@ -459,11 +425,9 @@ ForecastModelFactory
 Selected Forecast Model
 ```
 
-The current platform includes time-series forecasting infrastructure and Transformer-based forecasting.
+The current platform includes Transformer-based time-series forecasting.
 
-The model predicts a future return and produces a structured `PredictionResult` containing forecast information and validation metrics.
-
-Conceptually:
+The forecasting pipeline produces a structured `PredictionResult`:
 
 ```text
 Historical Prices
@@ -479,7 +443,19 @@ Validation Metrics
 PredictionResult
 ```
 
-The forecasting layer can be extended with additional models without changing the application service.
+Current validation output includes:
+
+- Forecast horizon
+- Predicted return
+- Predicted price
+- Direction classification
+- Validation RMSE
+- Validation MAE
+- Naive baseline RMSE
+- Improvement over baseline
+- Baseline-beating status
+
+The forecasting abstraction allows additional models to be added without changing application orchestration.
 
 ---
 
@@ -487,14 +463,14 @@ The forecasting layer can be extended with additional models without changing th
 
 QuantMind includes an evidence-grounded fundamental research pipeline using SEC filings.
 
-Version 0.7 supports both:
+Supported filing types:
 
 ```text
 SEC 10-K
 SEC 10-Q
 ```
 
-The ingestion pipeline is:
+The knowledge-ingestion pipeline is:
 
 ```text
 SEC EDGAR
@@ -510,8 +486,6 @@ Embedding Model
 Chroma Vector Store
 ```
 
-Current embeddings are generated locally using Ollama-compatible embedding infrastructure.
-
 The knowledge base stores filing metadata including:
 
 ```text
@@ -523,11 +497,53 @@ source
 chunk_index
 ```
 
+Current embeddings are generated locally using Ollama-compatible embedding infrastructure.
+
+---
+
+# Knowledge Ingestion vs. Research Runtime
+
+Version 0.8 separates SEC knowledge ingestion from online research execution.
+
+## Knowledge Ingestion
+
+```text
+SEC Filing
+    ↓
+prepare_knowledge()
+    ↓
+Parse
+    ↓
+Chunk
+    ↓
+Embed
+    ↓
+Persistent Chroma Knowledge Base
+```
+
+## Research Runtime
+
+```text
+Research Question
+    ↓
+ResearchSupervisor
+    ↓
+Fundamental selected?
+    ↓
+EvidenceRetriever
+    ↓
+Existing Chroma Knowledge
+    ↓
+FundamentalResearchAgent
+```
+
+This avoids downloading, parsing, and embedding SEC filings every time a research question is asked.
+
 ---
 
 # Filing-Type-Aware Retrieval
 
-Version 0.7 extends retrieval so the Research Supervisor can determine which filing type is appropriate for the research objective.
+The Research Supervisor can select the filing types appropriate for the research objective.
 
 Examples:
 
@@ -540,11 +556,11 @@ Examples:
 ```text
 "What are Apple's long-term structural business risks?"
         ↓
-10-K
+10-K + 10-Q
 ```
 
 ```text
-"Give me an integrated fundamental outlook."
+"Give me an integrated outlook using fundamental evidence."
         ↓
 10-K + 10-Q
 ```
@@ -558,7 +574,7 @@ LLM Supervisor
       ↓
 ResearchPlan
       ↓
-filing_types = ["10-Q"]
+filing_types
       ↓
 Application Code
       ↓
@@ -566,7 +582,7 @@ EvidenceRetriever
       ↓
 Chroma Metadata Filter
       ↓
-10-Q Evidence
+Relevant SEC Evidence
 ```
 
 This keeps infrastructure access deterministic and controlled.
@@ -575,7 +591,7 @@ This keeps infrastructure access deterministic and controlled.
 
 # Evidence-Grounded Retrieval
 
-The user's research question is converted into an embedding and compared against stored filing chunks.
+The research question is embedded and compared with stored SEC filing chunks.
 
 ```text
 Research Question
@@ -595,58 +611,115 @@ FundamentalEvidence
 RetrievalResult
 ```
 
-Each evidence object retains source metadata so retrieved information remains traceable to the underlying SEC filing.
+Each evidence object retains source metadata so information remains traceable to the underlying filing.
 
 ---
 
-# Adaptive Synthesis
+# ResearchContext
 
-Version 0.7 makes synthesis compatible with selectively executed research.
-
-`ResearchContext` can contain any combination of:
+`ResearchState` and `ResearchContext` serve different purposes.
 
 ```text
-Technical Evidence
-Forecast Evidence
-Fundamental Evidence
-```
-
-depending on the `ResearchPlan`.
-
-For example:
-
-```text
-Technical Question
+ResearchState
+= everything required by the workflow during execution
 
 ResearchContext
-├── indicators       ✓
-├── prediction       -
-└── retrieval        -
+= curated evidence and specialist interpretations
+  required by final synthesis
 ```
 
-or:
+The current `ResearchContext` can contain:
 
 ```text
-Fundamental Question
+ticker
+research_question
+current_price
 
-ResearchContext
-├── indicators       -
-├── prediction       -
-└── retrieval        ✓
+indicators
+prediction
+retrieval
+
+technical_agent_result
+forecast_agent_result
+fundamental_agent_result
 ```
 
-or:
+Full price history remains workflow working data and is not automatically sent into the final LLM prompt.
+
+---
+
+# Evidence-Grounded Multi-Agent Synthesis
+
+The final synthesis layer receives two kinds of information:
 
 ```text
-Integrated Question
-
-ResearchContext
-├── indicators       ✓
-├── prediction       ✓
-└── retrieval        ✓
+Raw / Structured Evidence
+        +
+Specialist-Agent Interpretation
 ```
 
-The synthesis prompt is constructed from the evidence available in `ResearchState`, enabling the LLM to generate a focused research report.
+The intended hierarchy is:
+
+```text
+Underlying Evidence
+        ↓
+Specialist Interpretation
+        ↓
+Synthesis Agent
+        ↓
+Final Research Report
+```
+
+Evidence is treated as the factual grounding layer.
+
+Specialist-agent output is treated as interpretation rather than new factual evidence.
+
+The synthesis prompt includes constraints intended to reduce unsupported claims involving:
+
+- Statistical significance
+- Economic significance
+- Forecast confidence
+- Technical-indicator extrapolation
+- SEC risk disclosures
+- Causal inference
+- Cross-evidence overinterpretation
+
+LLM output remains probabilistic and should be independently verified.
+
+---
+
+# LLM Runtime Context
+
+Integrated multi-agent synthesis requires a larger runtime context than simple single-stream analysis.
+
+QuantMind currently configures the Ollama provider with:
+
+```text
+num_ctx = 16384
+```
+
+During v0.8 testing, the underlying Qwen model supported a larger context window, while Ollama was initially running with a 4096-token runtime context.
+
+The smaller runtime context caused integrated synthesis to omit earlier technical and forecast evidence even though:
+
+```text
+LangGraph routing       correct
+ResearchState           complete
+ResearchContext         complete
+EquityPrompt             complete
+```
+
+Increasing the runtime context restored complete multi-stream synthesis.
+
+This illustrates an important AI-systems principle:
+
+```text
+Correct application code
+        ≠
+Correct AI-system behavior
+```
+
+Inference-runtime configuration is part of system architecture.
 
 ---
 
@@ -656,14 +729,16 @@ QuantMind deliberately separates deterministic system behavior from probabilisti
 
 ```text
 Probabilistic
-────────────────────────
-Research question interpretation
+────────────────────────────────
+Research-question interpretation
 Research planning
+Specialist-agent interpretation
 Final language synthesis
+```
 
-
+```text
 Deterministic
-────────────────────────
+────────────────────────────────
 ResearchPlan representation
 LangGraph routing
 Market-data retrieval
@@ -672,9 +747,10 @@ Forecast execution
 SEC retrieval
 Metadata filtering
 ResearchState propagation
+Structured agent-result storage
 ```
 
-This separation is important for building explainable and controllable AI research systems.
+This separation supports more explainable and controllable AI research workflows.
 
 ---
 
@@ -688,26 +764,35 @@ Responsible for application entry points and user interaction.
 
 ```text
 main.py
+knowledge_setup.py
 ```
 
 ## Application
 
-Coordinates use cases, research planning, workflow execution, retrieval, forecasting, and LLM interactions.
+Coordinates use cases, research planning, evidence production, specialist reasoning, and workflow execution.
 
 Examples:
 
 ```text
 ResearchSupervisor
+
+TechnicalResearchAgent
+ForecastResearchAgent
+FundamentalResearchAgent
+SynthesisResearchAgent
+
 IndicatorService
 PredictionService
 FilingIngestionService
 EvidenceRetriever
+
 LangGraph Workflow
+LangGraph Nodes
 ```
 
 ## Domain
 
-Contains core business entities and interfaces.
+Contains core entities and interfaces.
 
 Examples:
 
@@ -718,6 +803,11 @@ IndicatorResult
 PredictionResult
 RetrievalResult
 FundamentalEvidence
+
+TechnicalAgentResult
+ForecastAgentResult
+FundamentalAgentResult
+
 ForecastModel
 PriceRepository
 FilingRepository
@@ -747,54 +837,52 @@ Presentation
 Application
      ↓
 Domain
-     ↑
+
 Infrastructure
+     ↑
+implements interfaces required by inner layers
 ```
 
 ---
 
 # Project Structure
 
-A simplified view of the current project structure:
+A simplified view of the v0.8 structure:
 
 ```text
 ai-quant-research-platform/
-│
 ├── app/
-│   │
 │   ├── application/
-│   │   │
+│   │   ├── agents/
+│   │   │   ├── technical_research_agent.py
+│   │   │   ├── forecast_research_agent.py
+│   │   │   ├── fundamental_research_agent.py
+│   │   │   └── synthesis_research_agent.py
 │   │   ├── llm/
 │   │   │   └── llm_interface.py
-│   │   │
-│   │   ├── knowledge/
-│   │   │
 │   │   ├── prompts/
 │   │   │   └── equity_prompt.py
-│   │   │
 │   │   ├── retrieval/
 │   │   │   └── evidence_retriever.py
-│   │   │
 │   │   ├── services/
 │   │   │   ├── indicator_service.py
 │   │   │   ├── prediction_service.py
 │   │   │   ├── filing_ingestion_service.py
 │   │   │   └── research_supervisor.py
-│   │   │
 │   │   └── workflow/
 │   │       ├── research_graph.py
 │   │       ├── research_state.py
-│   │       │
 │   │       └── nodes/
 │   │           ├── supervisor_node.py
 │   │           ├── market_data_node.py
 │   │           ├── technical_analysis_node.py
+│   │           ├── technical_agent_node.py
 │   │           ├── forecast_analysis_node.py
+│   │           ├── forecast_agent_node.py
 │   │           ├── fundamental_analysis_node.py
+│   │           ├── fundamental_agent_node.py
 │   │           └── synthesis_node.py
-│   │
 │   ├── domain/
-│   │   │
 │   │   ├── entities/
 │   │   │   ├── research_plan.py
 │   │   │   ├── research_context.py
@@ -802,23 +890,19 @@ ai-quant-research-platform/
 │   │   │   ├── prediction_result.py
 │   │   │   ├── retrieval_result.py
 │   │   │   ├── fundamental_evidence.py
-│   │   │   └── filing.py
-│   │   │
+│   │   │   ├── technical_agent_result.py
+│   │   │   ├── forecast_agent_result.py
+│   │   │   └── fundamental_agent_result.py
 │   │   ├── forecast/
 │   │   ├── indicators/
 │   │   └── repositories/
-│   │
 │   └── infrastructure/
-│       │
 │       ├── llm/
 │       │   └── ollama_provider.py
-│       │
 │       ├── market_data/
 │       │   └── yahoo_repository.py
-│       │
 │       ├── ml/
 │       │   └── forecast_model_factory.py
-│       │
 │       └── rag/
 │           ├── sec_filing_repository.py
 │           ├── sec_document_extractor.py
@@ -827,26 +911,21 @@ ai-quant-research-platform/
 │           ├── chroma_vector_store.py
 │           ├── vector_knowledge_store.py
 │           └── vector_evidence_retriever.py
-│
 ├── docs/
 │   └── images/
-│       ├── architecture_v0.3.png
-│       ├── architecture_v0.4.png
-│       ├── architecture_v0.5.png
-│       ├── architecture_v0.6.png
 │       ├── architecture_v0.7.png
-│       ├── workflow_v0.4.png
-│       ├── workflow_v0.5.png
-│       ├── workflow_v0.6.png
-│       └── workflow_v0.7.png
-│
+│       ├── architecture_v0.8.png
+│       ├── workflow_v0.7.png
+│       └── workflow_v0.8.png
 ├── data/
 │   └── chroma/
-│
 ├── knowledge_setup.py
 ├── main.py
 ├── test_10q_retrieval.py
 ├── test_supervisor.py
+├── test_technical_agent.py
+├── test_forecast_agent.py
+├── test_fundamental_agent.py
 ├── requirements.txt
 └── README.md
 ```
@@ -862,6 +941,7 @@ ai-quant-research-platform/
 | Agent Orchestration | LangGraph |
 | Local LLM | Ollama |
 | Research LLM | Qwen |
+| Runtime Context | 16K tokens |
 | Embeddings | Ollama / EmbeddingGemma |
 | Vector Database | Chroma |
 | Market Data | Yahoo Finance / yfinance |
@@ -893,14 +973,18 @@ ai-quant-research-platform/
 | Chroma vector storage | Implemented |
 | Semantic RAG retrieval | Implemented |
 | Filing-type-aware retrieval | Implemented |
-| Evidence-grounded synthesis | Implemented |
-| LangGraph workflow | Implemented |
-| Typed ResearchState | Implemented |
 | LLM Research Supervisor | Implemented |
-| Structured ResearchPlan | Implemented |
-| Conditional research execution | Implemented |
-| Adaptive synthesis | Implemented |
-| Multi-agent coordination | Planned |
+| Structured `ResearchPlan` | Implemented |
+| Typed `ResearchState` | Implemented |
+| Conditional LangGraph execution | Implemented |
+| Technical Research Agent | Implemented |
+| Forecast Research Agent | Implemented |
+| Fundamental Research Agent | Implemented |
+| Synthesis Research Agent | Implemented |
+| Structured specialist-agent results | Implemented |
+| Multi-agent coordination | Implemented |
+| Evidence-grounded synthesis | Implemented |
+| Persistent knowledge/runtime separation | Implemented |
 | Earnings-call transcript ingestion | Planned |
 | Financial-news retrieval | Planned |
 | Portfolio analysis | Planned |
@@ -908,12 +992,14 @@ ai-quant-research-platform/
 | Web dashboard | Planned |
 | Cloud deployment | Planned |
 | CI/CD | Planned |
+| Production observability | Planned |
+| Automated agent evaluation | Planned |
 
 ---
 
 # Version Evolution
 
-## v0.1 – AI Market Research MVP
+## v0.1 — AI Market Research MVP
 
 Introduced:
 
@@ -923,9 +1009,7 @@ Introduced:
 - AI-generated market analysis
 - Markdown research reports
 
----
-
-## v0.2 – Technical Analysis
+## v0.2 — Technical Analysis
 
 Introduced:
 
@@ -936,9 +1020,7 @@ Introduced:
 - MACD
 - `IndicatorService`
 
----
-
-## v0.3 – Forecasting Architecture
+## v0.3 — Forecasting Architecture
 
 Introduced:
 
@@ -947,9 +1029,7 @@ Introduced:
 - Structured `PredictionResult`
 - Separation of forecasting logic from application orchestration
 
----
-
-## v0.4 – Multi-Model Forecasting
+## v0.4 — Multi-Model Forecasting
 
 Introduced:
 
@@ -958,9 +1038,7 @@ Introduced:
 - Model selection without changing application logic
 - Validation and baseline comparison
 
----
-
-## v0.5 – Fundamental RAG
+## v0.5 — Fundamental RAG
 
 Introduced:
 
@@ -973,9 +1051,7 @@ Introduced:
 - Semantic evidence retrieval
 - Evidence-grounded fundamental analysis
 
----
-
-## v0.6 – LangGraph Research Workflow
+## v0.6 — LangGraph Research Workflow
 
 Introduced:
 
@@ -990,15 +1066,13 @@ Introduced:
 
 Version 0.6 transformed QuantMind from a conventional application-service pipeline into a graph-based research workflow.
 
----
-
-## v0.7 – Agentic Research Planning
+## v0.7 — Agentic Research Planning
 
 Introduced:
 
 - LLM Research Supervisor
 - Structured `ResearchPlan`
-- ResearchPlan stored in `ResearchState`
+- `ResearchPlan` stored in `ResearchState`
 - Conditional LangGraph routing
 - Selective technical analysis
 - Selective forecasting
@@ -1009,7 +1083,29 @@ Introduced:
 - Adaptive evidence synthesis
 - Objective-dependent research workflows
 
-Version 0.7 transforms the LangGraph workflow from a predetermined graph execution into an **LLM-planned conditional research system**.
+Version 0.7 transformed the LangGraph workflow from predetermined graph execution into an **LLM-planned conditional research system**.
+
+## v0.8 — Multi-Agent Research System
+
+Introduced:
+
+- `TechnicalResearchAgent`
+- `ForecastResearchAgent`
+- `FundamentalResearchAgent`
+- `SynthesisResearchAgent`
+- `TechnicalAgentResult`
+- `ForecastAgentResult`
+- `FundamentalAgentResult`
+- Agent-node adapters for LangGraph
+- Evidence-production / interpretation separation
+- Structured specialist reasoning stored in `ResearchState`
+- Curated `ResearchContext` for synthesis
+- Multi-agent evidence-grounded synthesis
+- Persistent SEC knowledge/runtime separation
+- Explicit 16K Ollama context configuration for integrated synthesis
+- Multi-branch regression testing
+
+Version 0.8 transforms QuantMind from a conditional evidence workflow into a **supervisor-coordinated multi-agent financial research system**.
 
 ---
 
@@ -1017,7 +1113,7 @@ Version 0.7 transforms the LangGraph workflow from a predetermined graph executi
 
 The Supervisor has been tested against different research objectives.
 
-### Technical question
+## Technical question
 
 ```text
 Question:
@@ -1029,7 +1125,7 @@ use_fundamental: False
 filing_types:    []
 ```
 
-### Recent fundamental question
+## Recent fundamental question
 
 ```text
 Question:
@@ -1041,7 +1137,7 @@ use_fundamental: True
 filing_types:    ['10-Q']
 ```
 
-### Long-term fundamental question
+## Long-term structural question
 
 ```text
 Question:
@@ -1050,10 +1146,10 @@ What are Apple's long-term structural business risks?
 use_technical:   False
 use_forecast:    False
 use_fundamental: True
-filing_types:    ['10-K']
+filing_types:    ['10-K', '10-Q']
 ```
 
-### Integrated research question
+## Integrated multi-agent question
 
 ```text
 Question:
@@ -1066,7 +1162,7 @@ use_fundamental: True
 filing_types:    ['10-K', '10-Q']
 ```
 
-These cases demonstrate that the same research platform can construct different workflows based on the user's research objective.
+These cases demonstrate that one platform can construct different research workflows from the user's research objective.
 
 ---
 
@@ -1080,6 +1176,7 @@ QuantMind currently assumes:
 - Ollama installed and running
 - Required Ollama models available locally
 - Python dependencies installed
+- Fundamental SEC knowledge prepared before fundamental queries
 
 Install Python dependencies:
 
@@ -1087,15 +1184,29 @@ Install Python dependencies:
 pip install -r requirements.txt
 ```
 
-Make sure Ollama is running and the required models are available.
+Make sure Ollama is running and required models are available.
 
-Then run:
+## Prepare SEC Knowledge
+
+SEC knowledge ingestion is separate from the online research runtime.
+
+For example:
+
+```bash
+python knowledge_setup.py
+```
+
+The ingestion process persists embeddings and filing metadata in Chroma.
+
+Once knowledge is available, normal research execution does not re-ingest the filings.
+
+## Run Research
 
 ```bash
 python main.py
 ```
 
-The current CLI configuration is defined near the top of `main.py`:
+The CLI configuration is defined near the top of `main.py`:
 
 ```python
 TICKER = "AAPL"
@@ -1112,94 +1223,131 @@ Changing the research question allows the Supervisor to construct a different re
 
 ---
 
-# Testing the Research Supervisor
+# Testing
 
-The Supervisor can be tested independently:
+QuantMind v0.8 includes independent tests for planning, retrieval, and each specialist research agent.
+
+## Research Supervisor
 
 ```bash
 python test_supervisor.py
 ```
 
-The test demonstrates how different natural-language questions produce different structured research plans.
+Validates technical-only, fundamental-only, long-term fundamental, and integrated routing decisions.
 
----
-
-# Testing 10-Q Retrieval
-
-Quarterly filing retrieval can be tested independently:
+## 10-Q Retrieval
 
 ```bash
 python test_10q_retrieval.py
 ```
 
-This verifies that QuantMind can retrieve evidence specifically from SEC 10-Q filings using metadata-aware vector search.
+Validates metadata-aware retrieval from SEC 10-Q evidence.
+
+## Technical Research Agent
+
+```bash
+python test_technical_agent.py
+```
+
+Validates deterministic technical evidence → specialist interpretation.
+
+## Forecast Research Agent
+
+```bash
+python test_forecast_agent.py
+```
+
+Validates structured forecast evidence → specialist interpretation.
+
+## Fundamental Research Agent
+
+```bash
+python test_fundamental_agent.py
+```
+
+Validates retrieved SEC evidence → specialist interpretation with evidence references.
+
+The v0.8 workflow has also been tested end-to-end for:
+
+```text
+Technical-only research
+Forecast-only research
+Fundamental-only research
+Integrated technical + forecast + fundamental research
+```
 
 ---
 
 # Design Principles
 
-QuantMind is being developed around several core engineering principles:
+QuantMind is developed around the following engineering principles.
 
-### 1. Explainability
+## 1. Explainability
 
-Quantitative calculations, model outputs, retrieved evidence, and LLM synthesis remain conceptually separate.
+Quantitative calculations, model outputs, retrieved evidence, specialist interpretations, and final LLM synthesis remain conceptually separate.
 
-### 2. Evidence Grounding
+## 2. Evidence Grounding
 
-LLM research reports should be based on structured quantitative evidence and retrieved source documents rather than unsupported generation.
+Research reports should be based on structured quantitative evidence and retrieved source documents rather than unsupported generation.
 
-### 3. Separation of Concerns
+## 3. Separation of Concerns
 
 Domain logic is separated from application orchestration and infrastructure integrations.
 
-### 4. Extensibility
+## 4. Extensibility
 
 New forecasting models, indicators, retrieval sources, LLM providers, and research agents should be addable without redesigning the entire platform.
 
-### 5. Controlled Agentic Behavior
+## 5. Controlled Agentic Behavior
 
-LLMs make semantic decisions, while application code controls execution of external tools and infrastructure.
+LLMs make semantic planning and interpretation decisions, while application code controls deterministic execution and infrastructure access.
 
-### 6. Stateful Orchestration
+## 6. Stateful Orchestration
 
-`ResearchState` provides explicit workflow state rather than relying on hidden conversational memory.
+`ResearchState` provides explicit workflow state rather than hidden conversational memory.
 
-### 7. Research Before Trading
+## 7. Evidence vs. Interpretation
 
-QuantMind is designed for investment research, analytical experimentation, and decision support—not autonomous order execution.
+Evidence acquisition and LLM interpretation are separate responsibilities so retrieval quality and reasoning quality can be evaluated independently.
+
+## 8. Research Before Trading
+
+QuantMind is designed for investment research, analytical experimentation, and decision support — not autonomous order execution.
 
 ---
 
 # Roadmap
 
-The current architecture provides the foundation for increasingly sophisticated AI-assisted investment research.
-
-Potential future capabilities include:
+The current architecture provides the foundation for increasingly production-oriented Financial AI engineering.
 
 ```text
-QuantMind v0.7
-Agentic Research Supervisor
+v0.8
+Multi-Agent Research System
         ↓
-Multi-Agent Research Team
+v0.9
+FastAPI + Productization
         ↓
-Specialized Research Agents
-        │
-        ├── Technical Agent
-        ├── Forecast Agent
-        ├── Fundamental Agent
-        ├── News Agent
-        └── Portfolio Agent
+v0.10
+AWS Deployment
+Docker / ECR
+Cloud Infrastructure
+CI/CD
+Monitoring
+IAM / Security
         ↓
-Agent Coordination
+v0.11
+AI-System Evaluation
+Grounding Validation
+Provenance
+Agent Evaluation
+Production Observability
         ↓
-Cross-Agent Evidence Synthesis
-        ↓
-Investment Research Copilot
+v1.0
+Production-Grade Financial AI Platform
 ```
 
 Additional planned capabilities include:
 
-- Multi-agent coordination
 - Earnings-call transcript ingestion
 - Financial-news retrieval
 - Expanded financial-statement analytics
@@ -1208,9 +1356,15 @@ Additional planned capabilities include:
 - FastAPI service layer
 - Interactive research dashboard
 - MCP-compatible research tools
-- Cloud deployment
+- Docker containerization
+- AWS deployment
 - Automated testing
 - CI/CD
+- Cloud monitoring
+- Model monitoring
+- Grounding evaluation
+- Evidence provenance
+- Failure recovery
 
 ---
 
@@ -1236,11 +1390,13 @@ Retrieval-Augmented Generation
 LLM Reasoning
         +
 Agentic Workflows
+        +
+Production AI Engineering
         =
 Explainable Financial Intelligence
 ```
 
-The platform emphasizes research transparency, modular architecture, evidence grounding, and the separation of probabilistic AI reasoning from deterministic financial computation.
+The platform emphasizes research transparency, modular architecture, evidence grounding, and separation of probabilistic AI reasoning from deterministic financial computation.
 
 ---
 

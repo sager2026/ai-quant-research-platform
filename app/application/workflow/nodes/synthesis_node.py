@@ -1,21 +1,30 @@
 from collections.abc import Callable
 
-from app.application.llm.llm_interface import LLMInterface
-from app.application.prompts.equity_prompt import EquityPrompt
-from app.application.workflow.research_state import ResearchState
-from app.domain.entities.research_context import ResearchContext
+from app.application.agents.synthesis_research_agent import (
+    SynthesisResearchAgent,
+)
+from app.application.workflow.research_state import (
+    ResearchState,
+)
+from app.domain.entities.research_context import (
+    ResearchContext,
+)
 
 
 def create_synthesis_node(
-    llm: LLMInterface,
+    synthesis_agent: SynthesisResearchAgent,
 ) -> Callable[[ResearchState], dict]:
+    """
+    Create a LangGraph adapter for the
+    Synthesis Research Agent.
+    """
 
     def synthesis_node(
         state: ResearchState,
     ) -> dict:
 
         # ---------------------------------------------------------
-        # Build research context from available evidence
+        # 1. Build curated synthesis context
         # ---------------------------------------------------------
 
         context = ResearchContext(
@@ -26,9 +35,6 @@ def create_synthesis_node(
             current_price=state.get(
                 "current_price"
             ),
-            history=state.get(
-                "history"
-            ),
             indicators=state.get(
                 "indicators"
             ),
@@ -38,23 +44,28 @@ def create_synthesis_node(
             retrieval=state.get(
                 "retrieval"
             ),
+            technical_agent_result=state.get(
+                "technical_agent_result"
+            ),
+            forecast_agent_result=state.get(
+                "forecast_agent_result"
+            ),
+            fundamental_agent_result=state.get(
+                "fundamental_agent_result"
+            ),
         )
 
         # ---------------------------------------------------------
-        # Build evidence-grounded synthesis prompt
+        # 2. Delegate final reasoning to synthesis agent
         # ---------------------------------------------------------
 
-        prompt = EquityPrompt.build(
+        report = synthesis_agent.synthesize(
             context
         )
 
         # ---------------------------------------------------------
-        # Generate final research report
+        # 3. Return final workflow output
         # ---------------------------------------------------------
-
-        report = llm.generate(
-            prompt
-        )
 
         return {
             "report": report,

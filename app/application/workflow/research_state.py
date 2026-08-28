@@ -7,6 +7,16 @@ from app.domain.entities.prediction_result import PredictionResult
 from app.domain.entities.retrieval_result import RetrievalResult
 from app.domain.entities.research_plan import ResearchPlan
 
+from app.domain.entities.technical_agent_result import (
+    TechnicalAgentResult,
+)
+from app.domain.entities.forecast_agent_result import (
+    ForecastAgentResult,
+)
+from app.domain.entities.fundamental_agent_result import (
+    FundamentalAgentResult,
+)
+
 
 class ResearchState(TypedDict, total=False):
 
@@ -31,12 +41,20 @@ class ResearchState(TypedDict, total=False):
     current_price: float
 
     # ---------------------------------------------------------
-    # Analytical evidence
+    # Deterministic analytical evidence
     # ---------------------------------------------------------
 
     indicators: IndicatorResult
     prediction: PredictionResult
     retrieval: RetrievalResult
+
+    # ---------------------------------------------------------
+    # Specialist agent reasoning
+    # ---------------------------------------------------------
+
+    technical_agent_result: TechnicalAgentResult
+    forecast_agent_result: ForecastAgentResult
+    fundamental_agent_result: FundamentalAgentResult
 
     # ---------------------------------------------------------
     # Final output
