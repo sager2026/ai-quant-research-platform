@@ -6,3 +6,6 @@
 
 pytest==9.1.1
 httpx==0.28.1
+
+# MCP development / inspection tools
+mcp[cli]==2.1.1

@@ -35,3 +35,6 @@ uvicorn[standard]==0.52.2
 # Utilities
 rich==15.0.0
 tabulate==0.10.0
+
+# MCP integration
+mcp==2.1.1
