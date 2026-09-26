@@ -1,5 +1,5 @@
 # ============================================================
-# QuantMind v0.9 - Runtime Dependencies
+# QuantMind v0.11 - Runtime Dependencies
 # Versions validated on Python 3.12
 # ============================================================
 
@@ -38,3 +38,6 @@ tabulate==0.10.0
 
 # MCP integration
 mcp==2.1.1
+
+# Boto3 for AWS integration
+Boto3==1.43.98

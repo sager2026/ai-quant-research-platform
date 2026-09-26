@@ -21,7 +21,7 @@ app = FastAPI(
         "Financial AI research API powered by "
         "QuantMind's multi-agent research system."
     ),
-    version="0.9.0",
+    version="0.11.0",
 )
 
 

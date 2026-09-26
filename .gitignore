@@ -27,3 +27,8 @@ htmlcov/
 
 # Chroma vector database
 data/chroma/
+# Local AWS migration checkpoint
+data/titan_s3vectors_migration_checkpoint.json
+
+# Local AWS migration checkpoint
+data/titan_s3vectors_migration_checkpoint.json

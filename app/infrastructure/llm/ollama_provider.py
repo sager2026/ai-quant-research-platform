@@ -1,4 +1,4 @@
-from ollama import chat
+from ollama import Client
 
 from app.application.llm.llm_interface import (
     LLMInterface,
@@ -9,6 +9,8 @@ class OllamaProvider(LLMInterface):
     """
     Ollama-backed implementation of the LLM interface.
 
+    host identifies the Ollama server endpoint.
+
     num_ctx controls the runtime context window allocated
     by Ollama for each generation request.
     """
@@ -17,16 +19,22 @@ class OllamaProvider(LLMInterface):
         self,
         model: str = "qwen3:8b",
         num_ctx: int = 16384,
+        host: str = "http://localhost:11434",
     ):
         self.model = model
         self.num_ctx = num_ctx
+        self.host = host
+
+        self.client = Client(
+            host=self.host
+        )
 
     def generate(
         self,
         prompt: str,
     ) -> str:
 
-        response = chat(
+        response = self.client.chat(
             model=self.model,
             messages=[
                 {

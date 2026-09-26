@@ -16,9 +16,10 @@ from app.config.settings import (
     get_settings,
 )
 
-from app.infrastructure.llm.ollama_provider import (
-    OllamaProvider,
+from app.bootstrap.llm_factory import (
+    create_llm,
 )
+
 from app.infrastructure.market_data.yahoo_repository import (
     YahooRepository,
 )
@@ -28,13 +29,16 @@ from app.infrastructure.ml.forecast_model_factory import (
 from app.infrastructure.rag.chroma_vector_store import (
     ChromaVectorStore,
 )
-from app.infrastructure.rag.ollama_embedding_model import (
-    OllamaEmbeddingModel,
+from app.bootstrap.embedding_factory import (
+    create_embedding_model,
 )
+from app.bootstrap.vector_store_factory import (
+    create_vector_store,
+)
+
 from app.infrastructure.rag.vector_evidence_retriever import (
     VectorEvidenceRetriever,
 )
-
 
 def create_research_service(
     settings: Settings | None = None,
@@ -85,21 +89,15 @@ def create_research_service(
 
     # =========================================================
     # 5. Fundamental retrieval dependencies
-    #
-    # SEC filings are ingested separately and stored
-    # persistently in Chroma.
-    #
-    # The online research engine only retrieves evidence
-    # from the existing vector store.
     # =========================================================
 
-    embedding_model = OllamaEmbeddingModel(
-        model=settings.embedding_model
+    embedding_model = create_embedding_model(
+    settings=settings,
     )
 
-    vector_store = ChromaVectorStore(
-        path=settings.chroma_path,
-        collection_name=settings.chroma_collection_name,
+
+    vector_store = create_vector_store(
+    settings=settings,
     )
 
     evidence_retriever = VectorEvidenceRetriever(
@@ -112,9 +110,8 @@ def create_research_service(
     # 6. LLM dependency
     # =========================================================
 
-    llm = OllamaProvider(
-        model=settings.llm_model,
-        num_ctx=settings.llm_num_ctx,
+    llm = create_llm(
+    settings=settings,
     )
 
     # =========================================================

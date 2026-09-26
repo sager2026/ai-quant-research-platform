@@ -1,7 +1,11 @@
 import ollama
 
+from app.application.embeddings.embedding_interface import (
+    EmbeddingInterface,
+)
 
-class OllamaEmbeddingModel:
+
+class OllamaEmbeddingModel(EmbeddingInterface):
 
     def __init__(
         self,

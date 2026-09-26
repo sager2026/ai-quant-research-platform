@@ -129,20 +129,96 @@ Rules:
 """.strip()
 
     @staticmethod
+    def _extract_json(
+        response: str,
+    ) -> str:
+        """
+        Normalize common LLM formatting around JSON.
+
+        Handles:
+        - ```json ... ```
+        - ``` ... ```
+        - short explanatory text before/after JSON
+        """
+
+        text = response.strip()
+
+        if not text:
+            raise ValueError(
+                "Research Supervisor returned "
+                "an empty response."
+            )
+
+        # Remove Markdown code fences when present.
+        if text.startswith("```"):
+
+            lines = text.splitlines()
+
+            if lines:
+                lines = lines[1:]
+
+            if (
+                lines
+                and lines[-1].strip() == "```"
+            ):
+                lines = lines[:-1]
+
+            text = "\n".join(
+                lines
+            ).strip()
+
+        # Defensive fallback:
+        # extract the outer JSON object if the model
+        # added text before or after it.
+        start = text.find("{")
+        end = text.rfind("}")
+
+        if (
+            start == -1
+            or end == -1
+            or end <= start
+        ):
+            raise ValueError(
+                "Research Supervisor response "
+                "does not contain a JSON object."
+            )
+
+        return text[
+            start:end + 1
+        ]
+
+    @staticmethod
     def _parse_response(
         response: str,
     ) -> ResearchPlan:
 
+        normalized_response = (
+            ResearchSupervisor._extract_json(
+                response
+            )
+        )
+
         try:
+
             data = json.loads(
-                response.strip()
+                normalized_response
             )
 
         except json.JSONDecodeError as exc:
+
             raise ValueError(
                 "Research Supervisor returned "
                 "invalid JSON."
             ) from exc
+
+        if not isinstance(
+            data,
+            dict,
+        ):
+            raise ValueError(
+                "Research Supervisor JSON "
+                "must be an object."
+            )
 
         use_technical = bool(
             data.get(

@@ -1,7 +1,11 @@
 import chromadb
 
+from app.application.vectorstores.vector_store_interface import (
+    VectorStoreInterface,
+)
 
-class ChromaVectorStore:
+
+class ChromaVectorStore(VectorStoreInterface):
 
     def __init__(
         self,
