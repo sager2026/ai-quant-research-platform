@@ -1,5 +1,7 @@
 # QuantMind — AI Quant Research Platform
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 > **Where Quantitative Finance Meets AI Engineering.**
 
 **QuantMind** is an open-source **Financial AI research platform** combining financial econometrics, quantitative analysis, deep-learning forecasting, retrieval-augmented generation (RAG), multi-agent AI, and AWS cloud engineering in one evidence-grounded equity-research workflow.
@@ -1479,6 +1481,12 @@ Human Decision
 ```
 
 AI is intended to complement quantitative and documentary evidence rather than replace it.
+
+---
+
+## License
+
+QuantMind is licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
